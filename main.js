@@ -95,8 +95,8 @@
         // 顯示用戶的在線狀態: 'None', 'Standard', 'Advanced'
         detection_mode: 'Advanced',
 
-        // mode1: 小圆点(Small Dot)
-        // mode2: Emoji or 文本(Text)
+        // 小圆点(Small Dot): 'mode1'
+        // Emoji or 文本(Text): 'mode2'
         standard_mode_detection_display_style: 'mode1',
         advanced_mode_detection_display_style: 'mode2',
 
