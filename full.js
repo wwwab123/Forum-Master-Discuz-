@@ -478,7 +478,7 @@
                 .rate table img,
                 .cm .vm img,
                 .card_mn .avt img {
-                    content: url('//uc.huorong.cn/images/noavatar_middle.gif');
+                    content: url('//uc.huorong.cn/images/noavatar_small.gif');
                 }
             `);
         }
