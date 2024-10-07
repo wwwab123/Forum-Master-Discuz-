@@ -3,14 +3,14 @@
 // @name:en      Forum Master・Discuz! Revision
 // @name:zh-CN   论坛大师・Discuz！修改版
 // @name:zh-TW   論壇大師・Discuz！修改版
-// @namespace    Forum Master・Discuz!-mxdh
-// @version      0.9.2
-// @icon         https://www.discuz.net/favicon.ico
+// @namespace    Forum Master・Discuz!-mxdh (Update by wwwab)
+// @version      1.0.0
+// @icon         https://discuz.dismall.com/favicon.ico
 // @description  Forum Master - Discuz!　Beautify the interface, Remove ads, Enhance functions.
 // @description:en    Forum Master - Discuz!　Beautify the interface, Remove ads, Enhance functions.
 // @description:zh-CN 论坛大师（简体中文）・Discuz!　界面美化、移除广告、功能增强……
 // @description:zh-TW 論壇大師（繁體中文）・Discuz!　界面美化、移除廣告、功能增強……
-// @author       hostname,mxdh
+// @author       hostname,mxdh,wwwab
 // @match        https://www.52pojie.cn/thread-*.html
 // @match        https://www.52pojie.cn/forum.php?mod=viewthread&tid=*
 // @match        https://www.right.com.cn/forum/thread-*.html
@@ -40,6 +40,8 @@
 // @match        http://www.aihao.cc/forum.php?mod=viewthread&tid=*
 // @match        https://www.aihao.cc/thread-*.html
 // @match        https://www.aihao.cc/forum.php?mod=viewthread&tid=*
+// @match        https://home.x64bbs.cn/thread-*.html
+// @match        https://home.x64bbs.cn/forum.php?mod=viewthread&tid=*
 // @grant        GM_addStyle
 // @grant        GM_getValue
 // @grant        GM_log
@@ -77,6 +79,12 @@
 
     // Global Settings · Start
     const GLOBAL_CONFIG = {
+
+        // Lock the skin style: true/false
+        // 固定皮肤样式: true/false
+        // 固定皮膚樣式: true/false
+        lock_skin: false,
+        
         // Clean posts' format: true/false
         // 清除帖子格式: true/false
         // 清除帖子格式: true/false
@@ -87,10 +95,15 @@
         // 顯示用戶的在線狀態: 'None', 'Standard', 'Advanced'
         detection_mode: 'Advanced',
 
+        // mode1: 小圆点(Small Dot)
+        // mode2: Emoji or 文本(Text)
+        standard_mode_detection_display_style: 'mode1',
+        advanced_mode_detection_display_style: 'mode2',
+
         // Text Beautification: true/false
         // 文本美化: true/false
         // 文字美化: true/false
-        text_beautification: false,
+        text_beautification: true,
 
         // Code Beautification: true/false
         // 代码美化：true/false
@@ -111,6 +124,7 @@
         // 显示Emoji: true/false
         // 顯示Emoji: true/false
         display_emoji: true,
+
     }
     // Global Settings · End
 
@@ -138,6 +152,8 @@
     // Clean posts' format
     var clean_post = GM_getValue(site + '_CLEAN_POST') || GLOBAL_CONFIG.clean_post;
 
+    var lock_skin = GM_getValue(site + '_LOCK_SKIN') || GLOBAL_CONFIG.lock_skin;
+
     // Test code
     const ua = window.navigator.userAgent;
     GM_log('User-Agent:', ua);
@@ -148,6 +164,15 @@
     GM_log('Detection mode:', detection_mode);
     GM_log(typeof detection_mode);
     GM_log('');
+
+    const lock_skin_dic = {
+        false: '关闭',
+        true: '开启'
+    }
+    const lock_skin_cutover_dic = {
+        false: true,
+        true: false
+    }
 
     const clean_post_dic = {
         false: '关闭',
@@ -445,9 +470,6 @@
 
     // Default avatar
     function default_avatar() {
-        // https://herder.cdn.bcebos.com/uc_server/images/noavatar_big.gif
-        // https://herder.cdn.bcebos.com/uc_server/images/noavatar_middle.gif
-        // https://herder.cdn.bcebos.com/uc_server/images/noavatar_small.gif
         if (site === '52POJIE') {
             GM_addStyle(`
                 .pls .avatar img,
@@ -467,7 +489,7 @@
             GM_addStyle(`
                 .pls .avatar img,
                 .avtm img {
-                    content: url('//herder.cdn.bcebos.com/uc_server/images/noavatar_middle.gif');
+                    content: url('//uc.huorong.cn/images/noavatar_middle.gif');
                 }
 
                 #um .avt img,
@@ -475,7 +497,7 @@
                 .rate table img,
                 .cm .vm img,
                 .card_mn .avt img {
-                    content: url('//herder.cdn.bcebos.com/uc_server/images/noavatar_small.gif');
+                    content: url('//uc.huorong.cn/images/noavatar_small.gif');
                 }
             `);
         }
@@ -592,7 +614,11 @@
             if (this.readyState === 4 && this.status === 200) {
                 let status = !!~this.response.indexOf('[在线]');
                 let span = document.createElement('span');
-                span.className = status ? 'user-status-expression user-status-expression-online' : 'user-status-expression user-status-expression-offline';
+                if (GLOBAL_CONFIG.advanced_mode_detection_display_style === 'mode2') {
+                    span.className = status ? 'user-status-expression user-status-expression-online' : 'user-status-expression user-status-expression-offline';
+                } else {
+                    span.className = status ? 'user-online-status online gol' : 'user-online-status offline gol';
+                }
                 span.title = status ? '当前在线' : '当前离线';
                 avatar.appendChild(span);
             }
@@ -614,12 +640,20 @@
                 for (let i = 0; i < info.length; i++) {
                     if (!!~info[i].innerHTML.indexOf('<em>当前在线</em>')) {
                         let div = document.createElement('div');
-                        div.className = 'user-online-status online gol';
+                        if (GLOBAL_CONFIG.standard_mode_detection_display_style === 'mode1') {
+                            div.className = 'user-online-status online gol';
+                        } else {
+                            div.className = 'user-status-expression user-status-expression-online'
+                        }
                         div.title = '当前在线';
                         avatar[i].appendChild(div);
                     } else {
                         let div = document.createElement('div');
-                        div.className = 'user-online-status offline gol';
+                        if (GLOBAL_CONFIG.standard_mode_detection_display_style === 'mode1') {
+                            div.className = 'user-online-status offline gol';
+                        } else {
+                            div.className = 'user-status-expression user-status-expression-offline'
+                        }
                         div.title = '当前离线';
                         avatar[i].appendChild(div);
 
@@ -647,12 +681,13 @@
     // Execution as Show users online status
     if (member) {
         show_users_online_status();
-    } else if (site === 'PCBETA' || site === 'DOSPY') {
+    } else if (site === 'PCBETA' || site === 'DOSPY' || site === '52POJIE') {
         detection_mode = 'Standard';
         show_users_online_status();
     }
 
     var display_check_in_button = true;
+    var display_lock_skin_button = false;
 
     if (site === 'KAFAN') {
         // Auto Check-in
@@ -663,6 +698,26 @@
             }
         }
         display_check_in_button = false;
+    }
+
+    if (site === 'KAFAN') {
+        display_lock_skin_button = true;
+    }
+    
+    if (lock_skin === true) {
+        if (site === 'KAFAN') {
+            let cssLink1 = document.createElement('link');
+            cssLink1.rel = 'stylesheet';
+            cssLink1.type = 'text/css';
+            cssLink1.href = 'https://bbs.kafan.cn/template/comeing_city/style/t13/style.css';
+            document.head.appendChild(cssLink1);
+            
+            let cssLink2 = document.createElement('link');
+            cssLink2.rel = 'stylesheet';
+            cssLink2.type = 'text/css';
+            cssLink2.href = 'https://a.kafan.cn/static/template/comeing_city/style/t13/style.css?b33';
+            document.head.appendChild(cssLink2);
+        }
     }
 
     if (site === 'HUORONG' || site === 'DOSPY') display_check_in_button = false;
@@ -780,13 +835,43 @@
         }
         if (member) {
             const clean_post_button = document.createElement('button');
-            clean_post_button.className = 'custom-function-button detection-mode-button';
+            clean_post_button.className = 'custom-function-button clean-post-button';
             clean_post_button.innerHTML = '清除格式：' + clean_post_dic[clean_post];
             clean_post_button.addEventListener('mouseenter', clean_post_mouseenter, false);
             clean_post_button.addEventListener('click', clean_post_switch, false);
             function_buttons.appendChild(clean_post_button);
         }
 
+        //lock skin button
+        if (display_lock_skin_button) {
+            function lock_skin_mouseenter() {
+                lock_skin = GM_getValue(site + '_LOCK_SKIN') || lock_skin;
+                this.innerHTML = '锁定样式：' + lock_skin_dic[lock_skin];
+            }
+            function lock_skin_switch() {
+                this.disabled = true;
+                this.classList.add('button-disabled');
+                lock_skin = lock_skin_cutover_dic[lock_skin];
+                this.innerHTML = '锁定样式：' + lock_skin_dic[lock_skin];
+                GM_setValue(site + '_LOCK_SKIN', lock_skin);
+                if (GLOBAL_CONFIG.auto_reload) {
+                    window.location.reload();
+                    return;
+                }
+                let message = '锁定样式模式切换成功，刷新页面即可进入 <span style="color: var(--info);">' + clean_post_dic[clean_post] + '</span>。';
+                show_dialog(message);
+                this.classList.remove('button-disabled');
+            }
+            if (member) {
+                const lock_skin_button = document.createElement('button');
+                lock_skin_button.className = 'custom-function-button lock-skin-button';
+                lock_skin_button.innerHTML = '锁定样式：' + lock_skin_dic[lock_skin];
+                lock_skin_button.addEventListener('mouseenter', lock_skin_mouseenter, false);
+                lock_skin_button.addEventListener('click', lock_skin_switch, false);
+                function_buttons.appendChild(lock_skin_button);
+            }
+        }
+    
         // Check in
         if (member && display_check_in_button) {
             function check_in() {
@@ -804,7 +889,14 @@
                     window.open('//i.pcbeta.com/home.php?mod=task&do=apply&id=149');
                     return false;
                 }
-
+                if (site === '52POJIE') {
+                    window.open('//www.52pojie.cn/home.php?mod=task&do=apply&id=2');
+                    return false;
+                }
+                if (site === 'X64BBS') {
+                    window.open('//home.x64bbs.cn/plugin.php?id=study_daily_attendance:daily_attendance&fhash=808cfd63');
+                    return false;
+                }
                 for (let i = 0; i < 10; i++) {
                     setTimeout(() => {
                         let request = new XMLHttpRequest();
