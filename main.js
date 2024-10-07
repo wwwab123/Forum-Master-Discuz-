@@ -84,7 +84,7 @@
         // 固定皮肤样式: true/false
         // 固定皮膚樣式: true/false
         lock_skin: false,
-        
+
         // Clean posts' format: true/false
         // 清除帖子格式: true/false
         // 清除帖子格式: true/false
@@ -703,7 +703,7 @@
     if (site === 'KAFAN') {
         display_lock_skin_button = true;
     }
-    
+
     if (lock_skin === true) {
         if (site === 'KAFAN') {
             let cssLink1 = document.createElement('link');
@@ -842,7 +842,7 @@
             function_buttons.appendChild(clean_post_button);
         }
 
-        //lock skin button
+        // Lock skin button
         if (display_lock_skin_button) {
             function lock_skin_mouseenter() {
                 lock_skin = GM_getValue(site + '_LOCK_SKIN') || lock_skin;
@@ -871,7 +871,7 @@
                 function_buttons.appendChild(lock_skin_button);
             }
         }
-    
+
         // Check in
         if (member && display_check_in_button) {
             function check_in() {
