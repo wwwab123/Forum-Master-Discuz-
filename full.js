@@ -823,7 +823,7 @@
             function_buttons.appendChild(clean_post_button);
         }
 
-        //lock skin button
+        // Lock skin button
         if (display_lock_skin_button) {
             function lock_skin_mouseenter() {
                 lock_skin = GM_getValue(site + '_LOCK_SKIN') || lock_skin;
