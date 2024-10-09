@@ -42,6 +42,7 @@
 // @match        https://www.aihao.cc/forum.php?mod=viewthread&tid=*
 // @match        https://home.x64bbs.cn/thread-*.html
 // @match        https://home.x64bbs.cn/forum.php?mod=viewthread&tid=*
+// @grant        unsafeWindow
 // @grant        GM_addStyle
 // @grant        GM_getValue
 // @grant        GM_log
@@ -894,8 +895,13 @@
                     return false;
                 }
                 if (site === 'X64BBS') {
-                    window.open('//home.x64bbs.cn/plugin.php?id=study_daily_attendance:daily_attendance&fhash=808cfd63');
-                    return false;
+                    setTimeout(() => {
+                        let request = new XMLHttpRequest();
+                        let space = '//home.x64bbs.cn/plugin.php?id=study_daily_attendance:daily_attendance&fhash=' + document.getElementsByName('formhash')[0].value;
+                        request.open('get', space);
+                        request.send();
+                    }, 1000);
+                    return false
                 }
                 for (let i = 0; i < 10; i++) {
                     setTimeout(() => {
