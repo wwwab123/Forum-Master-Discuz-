@@ -48,10 +48,6 @@
 // @match        https://www.dospy.wang/forum.php?mod=forumdisplay&fid=*
 // @match        https://www.dospy.wang/thread-*.html
 // @match        https://www.dospy.wang/forum.php?mod=viewthread&tid=*
-// @match        http://www.aihao.cc/forum-*.html
-// @match        http://www.aihao.cc/forum.php?mod=forumdisplay&fid=*
-// @match        http://www.aihao.cc/thread-*.html
-// @match        http://www.aihao.cc/forum.php?mod=viewthread&tid=*
 // @match        https://www.aihao.cc/forum-*.html
 // @match        https://www.aihao.cc/forum.php?mod=forumdisplay&fid=*
 // @match        https://www.aihao.cc/thread-*.html
