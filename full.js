@@ -4,17 +4,21 @@
 // @name:zh-CN   论坛大师・Discuz！修改版
 // @name:zh-TW   論壇大師・Discuz！修改版
 // @namespace    Forum Master・Discuz!-mxdh (Update by wwwab)
-// @version      1.0.0
+// @version      1.1.0
 // @icon         https://discuz.dismall.com/favicon.ico
 // @description  Forum Master - Discuz!　Beautify the interface, Remove ads, Enhance functions.
 // @description:en    Forum Master - Discuz!　Beautify the interface, Remove ads, Enhance functions.
 // @description:zh-CN 论坛大师（简体中文）・Discuz!　界面美化、移除广告、功能增强……
 // @description:zh-TW 論壇大師（繁體中文）・Discuz!　界面美化、移除廣告、功能增強……
 // @author       hostname,mxdh,wwwab
+// @match        http://*/forum-*.html
+// @match        http://*/forum.php?mod=forumdisplay&fid=*
 // @match        http://*/thread-*.html
 // @match        http://*/forum.php?mod=viewthread&tid=*
 // @match        http://*/viewthread-*.html
 // @match        http://*/fourm/thread-*.html
+// @match        https://*/forum-*.html
+// @match        https://*/forum.php?mod=forumdisplay&fid=*
 // @match        https://*/thread-*.html
 // @match        https://*/forum.php?mod=viewthread&tid=*
 // @match        https://*/viewthread-*.html
@@ -25,10 +29,7 @@
 // @grant        GM_log
 // @grant        GM_setValue
 // @grant        GM_xmlhttpRequest
-// @supportURL   https://github.com/mxdh/Forum-Master-Discuz-
 // @license GPL-3.0
-// @downloadURL https://update.greasyfork.org/scripts/401307/Forum%20Master%E3%83%BBDiscuz%21%20Revision.user.js
-// @updateURL https://update.greasyfork.org/scripts/401307/Forum%20Master%E3%83%BBDiscuz%21%20Revision.meta.js
 // ==/UserScript==
 
 (function () {
@@ -59,6 +60,11 @@
 
     // Global Settings · Start
     const GLOBAL_CONFIG = {
+
+        // Posts' sortord: 'unlocked', 'lastpost', 'threadcreate'(author dateline)
+        // 主题帖排序方式: 'unlocked, 'lastpost', 'threadcreate'(author dateline)
+        // 主題帖排序方式: 'unlocked, 'lastpost', 'threadcreate'(author dateline)
+        thread_sortord: 'unlocked',
 
         // Lock the skin style: true/false
         // 固定皮肤样式: true/false
@@ -113,6 +119,25 @@
     // Host Name
     const hn = window.location.hostname;
 
+    // Path Name ("/<.<")
+    const pn = window.location.pathname;
+    // Search Name ("?*)
+    const sn = window.location.search;
+
+    function get_page_type() {
+        const forum_page_regex_pn = /^\/forum-.*\.html$/;
+        const forum_page_regex_sn = /^\?.*forumdisplay.*$/;
+        const thread_page_regex_pn = /^\/thread-.*\.html$/;
+        const thread_page_regex_sn = /^\?.*viewthread.*$/;
+        if (forum_page_regex_pn.test(pn) || forum_page_regex_sn.test(sn)) {
+            return 'forum page';
+        }
+        if (thread_page_regex_pn.test(pn) || thread_page_regex_sn.test(sn)) {
+            return 'thread page';
+        }
+    }
+    const page_type = get_page_type();
+
     function get_site_pos() {
         if (!!~hn.indexOf('.com.cn')) return -3;
         return -2;
@@ -135,6 +160,8 @@
 
     var lock_skin = GM_getValue(site + '_LOCK_SKIN') || GLOBAL_CONFIG.lock_skin;
 
+    var thread_sortord = GM_getValue(site + '_THREAD_SORTORD') || GLOBAL_CONFIG.thread_sortord;
+
     // Test code
     const ua = window.navigator.userAgent;
     GM_log('User-Agent:', ua);
@@ -145,6 +172,18 @@
     GM_log('Detection mode:', detection_mode);
     GM_log(typeof detection_mode);
     GM_log('');
+
+    const thread_sortord_dic = {
+        unlocked: '未锁定',
+        lastpost: '最后回复时间', 
+        threadcreate: '发帖时间'
+    }
+
+    const thread_sortord_cutover_dic = {
+        unlocked: 'lastpost',
+        lastpost: 'threadcreate',
+        threadcreate: 'unlocked'
+    }
 
     const lock_skin_dic = {
         false: '关闭',
@@ -702,6 +741,32 @@
         }
     }
 
+    switch (thread_sortord) {
+        case 'unlocked':
+            break;
+
+        case 'lastpost':
+            if (page_type === 'forum page') {
+                if (!window.location.search.includes("filter=lastpost&orderby=lastpost")) {
+                    const lastpost = document.querySelector('a[href*="filter=lastpost&orderby=lastpost"]');
+                    window.location.href = lastpost;
+                }
+            }
+            break;
+
+        case 'threadcreate':
+            if (page_type === 'forum page') {
+                if (!window.location.search.includes("filter=author&orderby=dateline")) {
+                    const threadcreate = document.querySelector('a[href*="filter=author&orderby=dateline"]');
+                    window.location.href = threadcreate;
+                }
+            }
+            break;
+
+        default:
+            break;
+    }
+
     if (site === 'HUORONG' || site === 'DOSPY') display_check_in_button = false;
 
     // Create Button Group
@@ -761,12 +826,14 @@
             this.disabled = false;
             this.classList.remove('button-disabled');
         }
-        const scene_mode_button = document.createElement('button');
-        scene_mode_button.className = 'custom-function-button scene-mode-button';
-        scene_mode_button.innerHTML = scene_mode_dic[scene_mode];
-        scene_mode_button.addEventListener('mouseenter', scene_mode_mouseenter, false);
-        scene_mode_button.addEventListener('click', scene_mode_switch, false);
-        function_buttons.appendChild(scene_mode_button);
+        if (page_type === 'thread page') {
+            const scene_mode_button = document.createElement('button');
+            scene_mode_button.className = 'custom-function-button scene-mode-button';
+            scene_mode_button.innerHTML = scene_mode_dic[scene_mode];
+            scene_mode_button.addEventListener('mouseenter', scene_mode_mouseenter, false);
+            scene_mode_button.addEventListener('click', scene_mode_switch, false);
+            function_buttons.appendChild(scene_mode_button);
+        }
 
         // Detection mode button
         function detection_mode_mouseenter() {
@@ -787,7 +854,7 @@
             show_dialog(message);
             this.classList.remove('button-disabled');
         }
-        if (member) {
+        if ((member) && (page_type === 'thread page')) {
             const detection_mode_button = document.createElement('button');
             detection_mode_button.className = 'custom-function-button detection-mode-button';
             detection_mode_button.innerHTML = '探测模式：' + detection_mode_dic[detection_mode];
@@ -815,7 +882,7 @@
             show_dialog(message);
             this.classList.remove('button-disabled');
         }
-        if (member) {
+        if (page_type === 'thread page') {
             const clean_post_button = document.createElement('button');
             clean_post_button.className = 'custom-function-button clean-post-button';
             clean_post_button.innerHTML = '清除格式：' + clean_post_dic[clean_post];
@@ -825,33 +892,59 @@
         }
 
         // Lock skin button
+        function lock_skin_mouseenter() {
+            lock_skin = GM_getValue(site + '_LOCK_SKIN') || lock_skin;
+            this.innerHTML = '锁定样式：' + lock_skin_dic[lock_skin];
+        }
+        function lock_skin_switch() {
+            this.disabled = true;
+            this.classList.add('button-disabled');
+            lock_skin = lock_skin_cutover_dic[lock_skin];
+            this.innerHTML = '锁定样式：' + lock_skin_dic[lock_skin];
+            GM_setValue(site + '_LOCK_SKIN', lock_skin);
+            if (GLOBAL_CONFIG.auto_reload) {
+                window.location.reload();
+                return;
+            }
+            let message = '锁定样式模式切换成功，刷新页面即可进入 <span style="color: var(--info);">' + clean_post_dic[clean_post] + '</span>。';
+            show_dialog(message);
+            this.classList.remove('button-disabled');
+        }
         if (display_lock_skin_button) {
-            function lock_skin_mouseenter() {
-                lock_skin = GM_getValue(site + '_LOCK_SKIN') || lock_skin;
-                this.innerHTML = '锁定样式：' + lock_skin_dic[lock_skin];
+            const lock_skin_button = document.createElement('button');
+            lock_skin_button.className = 'custom-function-button lock-skin-button';
+            lock_skin_button.innerHTML = '锁定样式：' + lock_skin_dic[lock_skin];
+            lock_skin_button.addEventListener('mouseenter', lock_skin_mouseenter, false);
+            lock_skin_button.addEventListener('click', lock_skin_switch, false);
+            function_buttons.appendChild(lock_skin_button);
+        }
+
+        // Thread sortord button
+        function thread_sortord_mouseenter() {
+            lock_skin = GM_getValue(site + '_THREAD_SORTORD') || thread_sortord;
+            this.innerHTML = '主题帖排序方式：' + thread_sortord_dic[thread_sortord];
+        }
+        function thread_sortord_switch() {
+            this.disabled = true;
+            this.classList.add('button-disabled');
+            thread_sortord = thread_sortord_cutover_dic[thread_sortord];
+            this.innerHTML = '主题帖排序方式：' + thread_sortord_dic[thread_sortord];
+            GM_setValue(site + '_THREAD_SORTORD', thread_sortord);
+            if (GLOBAL_CONFIG.auto_reload) {
+                window.location.reload();
+                return;
             }
-            function lock_skin_switch() {
-                this.disabled = true;
-                this.classList.add('button-disabled');
-                lock_skin = lock_skin_cutover_dic[lock_skin];
-                this.innerHTML = '锁定样式：' + lock_skin_dic[lock_skin];
-                GM_setValue(site + '_LOCK_SKIN', lock_skin);
-                if (GLOBAL_CONFIG.auto_reload) {
-                    window.location.reload();
-                    return;
-                }
-                let message = '锁定样式模式切换成功，刷新页面即可进入 <span style="color: var(--info);">' + clean_post_dic[clean_post] + '</span>。';
-                show_dialog(message);
-                this.classList.remove('button-disabled');
-            }
-            if (member) {
-                const lock_skin_button = document.createElement('button');
-                lock_skin_button.className = 'custom-function-button lock-skin-button';
-                lock_skin_button.innerHTML = '锁定样式：' + lock_skin_dic[lock_skin];
-                lock_skin_button.addEventListener('mouseenter', lock_skin_mouseenter, false);
-                lock_skin_button.addEventListener('click', lock_skin_switch, false);
-                function_buttons.appendChild(lock_skin_button);
-            }
+            let message = '主题帖排序方式模式切换成功，刷新页面即可进入 <span style="color: var(--info);">' + clean_post_dic[clean_post] + '</span>。';
+            show_dialog(message);
+            this.classList.remove('button-disabled');
+        }
+        if (page_type === 'forum page') {
+            const thread_sortord_button = document.createElement('button');
+            thread_sortord_button.className = 'custom-function-button thread-sortord-button';
+            thread_sortord_button.innerHTML = '主题帖排序方式：' + thread_sortord_dic[thread_sortord];
+            thread_sortord_button.addEventListener('mouseenter', thread_sortord_mouseenter, false);
+            thread_sortord_button.addEventListener('click', thread_sortord_switch, false);
+            function_buttons.appendChild(thread_sortord_button);
         }
 
         // Check in
@@ -882,6 +975,10 @@
                         request.open('get', space);
                         request.send();
                     }, 1000);
+                    if (GLOBAL_CONFIG.auto_reload) {
+                        window.location.reload();
+                        return;
+                    }
                     return false
                 }
                 if (site === 'KAFAN') {
