@@ -4,7 +4,7 @@
 // @name:zh-CN   论坛大师・Discuz！修改版
 // @name:zh-TW   論壇大師・Discuz！修改版
 // @namespace    Forum Master・Discuz!-mxdh (Update by wwwab)
-// @version      1.1.1
+// @version      1.1.3
 // @icon         https://discuz.dismall.com/favicon.ico
 // @description  Forum Master - Discuz!　Beautify the interface, Remove ads, Enhance functions.
 // @description:en    Forum Master - Discuz!　Beautify the interface, Remove ads, Enhance functions.
@@ -127,12 +127,13 @@
     function get_page_type() {
         const forum_page_regex_pn = /^\/forum-.*\.html$/;
         const forum_page_regex_sn = /^\?.*forumdisplay.*$/;
-        const thread_page_regex_pn = /^\/thread-.*\.html$/;
+        const thread_page_regex_pn1 = /^\/thread-.*\.html$/;
+        const thread_page_regex_pn2 = /^\/viewthread-.*\.html$/;
         const thread_page_regex_sn = /^\?.*viewthread.*$/;
         if (forum_page_regex_pn.test(pn) || forum_page_regex_sn.test(sn)) {
             return 'forum page';
         }
-        if (thread_page_regex_pn.test(pn) || thread_page_regex_sn.test(sn)) {
+        if (thread_page_regex_pn1.test(pn) || thread_page_regex_pn2.test(pn) || thread_page_regex_sn.test(sn)) {
             return 'thread page';
         }
     }
@@ -700,9 +701,9 @@
     }
 
     // Execution as Show users online status
-    if (member) {
+    if ((member) && (page_type === 'thread page')) {
         show_users_online_status();
-    } else if (site === 'PCBETA' || site === 'DOSPY' || site === '17500' || site === '52POJIE') {
+    } else if ((site === 'PCBETA' || site === 'DOSPY' || site === '17500') && (page_type === 'thread page')) {
         detection_mode = 'Standard';
         show_users_online_status();
     }
@@ -1133,8 +1134,7 @@
     `);
 
     // Cascading Style Sheets・bbs.pcbeta.com
-    if (site === 'PCBETA') {
-        GM_addStyle(`
+    site === 'PCBETA' && page_type === 'thread page' && GM_addStyle(`
             #wp > div:first-child  {
                 display: none !important;
             }
@@ -1190,8 +1190,7 @@
                 -webkit-user-select: none;
                 user-select: none;
             }
-        `);
-    }
+    `);
 
     // Cascading Style Sheets・bbs.fobshanghai.com
     site === 'FOBSHANGHAI' && GM_addStyle(`
