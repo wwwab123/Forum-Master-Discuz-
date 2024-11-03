@@ -4,7 +4,7 @@
 // @name:zh-CN   论坛大师・Discuz！修改版
 // @name:zh-TW   論壇大師・Discuz！修改版
 // @namespace    Forum Master・Discuz!-mxdh (Update by wwwab)
-// @version      1.2.0
+// @version      1.3.0
 // @icon         https://discuz.dismall.com/favicon.ico
 // @description  Forum Master - Discuz!　Beautify the interface, Remove ads, Enhance functions.
 // @description:en    Forum Master - Discuz!　Beautify the interface, Remove ads, Enhance functions.
@@ -113,6 +113,12 @@
         // 回帖字数限制绕过: true/false
         // 回帖字數限制繞過: true/false
         word_count_limit_bypass: true,
+
+        // Add a tail automatically at the end of the reply: true/false; Tail content: Text
+        // 回帖小尾巴: true/false；回帖小尾巴内容: Text
+        // 回帖小尾巴: true/false；回帖小尾巴內容: Text
+        reply_tail: true,
+        reply_tail_content: '  喵～',
 
         // Scene Mode: 'Standard', 'Family', 'Office'
         // 场景模式: 'Standard', 'Family', 'Office'
@@ -1114,17 +1120,48 @@
     // 回帖字数限制绕过 - (1)获取回帖字数不足时的填充文本 · End
 
 
-    // 回帖字数限制绕过 - (2)字数填充函数 · Start
+    // 回帖字数限制绕过 - (2)字数填充函数 & 回帖小尾巴功能函数 · Start
     function editor_content(PostMessage) {
         let PostMessageContent = PostMessage.value;
-        if (PostMessageContent && PostMessageContent.length < 20) {
-            PostMessageContent = PostMessageContent.trim();
-            PostMessage.style.opacity = '0';
-            PostMessage.value = PostMessageContent.concat(WordCountLimitBypass_AttachContent);
-            setTimeout(() => {
-                PostMessage.value = PostMessageContent;
-                PostMessage.style.opacity = '1';
-            }, 100);
+        GM_log(PostMessageContent)
+        if (GLOBAL_CONFIG.word_count_limit_bypass && PostMessageContent) {
+            if (GLOBAL_CONFIG.reply_tail) {
+                PostMessageContent = PostMessageContent.trim();
+                PostMessage.style.opacity = '0';
+                if (PostMessageContent.length < 20) {
+                    GM_log("editor_content_mode1")
+                    PostMessage.value = PostMessageContent.concat(GLOBAL_CONFIG.reply_tail_content + WordCountLimitBypass_AttachContent);
+                } else {
+                    GM_log("editor_content_mode2")
+                    PostMessage.value = PostMessageContent.concat(GLOBAL_CONFIG.reply_tail_content);
+                }
+                setTimeout(() => {
+                    PostMessage.value = PostMessageContent;
+                    PostMessage.style.opacity = '1';
+                }, 100);
+            } else {
+                if (PostMessageContent && PostMessageContent.length < 20) {
+                    GM_log("editor_content_mode3")
+                    PostMessageContent = PostMessageContent.trim();
+                    PostMessage.style.opacity = '0';
+                    PostMessage.value = PostMessageConten.concat(WordCountLimitBypass_AttachContent);
+                    setTimeout(() => {
+                        PostMessage.value = PostMessageContent;
+                        PostMessage.style.opacity = '1';
+                    }, 100);
+                }
+            }
+        } else {
+            if (GLOBAL_CONFIG.reply_tail && PostMessageContent) {
+                GM_log("editor_content_mode4")
+                PostMessageContent = PostMessageContent.trim();
+                PostMessage.style.opacity = '0';
+                PostMessage.value = PostMessageContent.concat(GLOBAL_CONFIG.reply_tail_content);
+                setTimeout(() => {
+                    PostMessage.value = PostMessageContent;
+                    PostMessage.style.opacity = '1';
+                }, 100);
+            }
         }
     }
 
