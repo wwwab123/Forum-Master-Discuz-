@@ -4,62 +4,28 @@
 // @name:zh-CN   论坛大师・Discuz！修改版
 // @name:zh-TW   論壇大師・Discuz！修改版
 // @namespace    Forum Master・Discuz!-mxdh (Update by wwwab)
-// @version      1.1.5
+// @version      1.1.6
 // @icon         https://discuz.dismall.com/favicon.ico
 // @description  Forum Master - Discuz!　Beautify the interface, Remove ads, Enhance functions.
 // @description:en    Forum Master - Discuz!　Beautify the interface, Remove ads, Enhance functions.
 // @description:zh-CN 论坛大师（简体中文）・Discuz!　界面美化、移除广告、功能增强……
 // @description:zh-TW 論壇大師（繁體中文）・Discuz!　界面美化、移除廣告、功能增強……
 // @author       hostname,mxdh,wwwab
-// @match        https://www.52pojie.cn/forum-*.html
-// @match        https://www.52pojie.cn/forum.php?mod=forumdisplay&fid=*
-// @match        https://www.52pojie.cn/thread-*.html
-// @match        https://www.52pojie.cn/forum.php?mod=viewthread&tid=*
-// @match        https://www.right.com.cn/forum/forum-*.html
-// @match        https://www.right.com.cn/forum/forum.php?mod=forumdisplay&fid=*
-// @match        https://www.right.com.cn/forum/thread-*.html
-// @match        https://www.right.com.cn/forum/forum.php?mod=viewthread&tid=*
-// @match        https://bbs.kafan.cn/forum-*.html
-// @match        https://bbs.kafan.cn/forum.php?mod=forumdisplay&fid=*
-// @match        https://bbs.kafan.cn/thread-*.html
-// @match        https://bbs.kafan.cn/forum.php?mod=viewthread&tid=*
-// @match        https://hostloc.com/forum-*.html
-// @match        https://hostloc.com/forum.php?mod=forumdisplay&fid=*
-// @match        https://hostloc.com/thread-*.html
-// @match        https://hostloc.com/forum.php?mod=viewthread&tid=*
-// @match        https://www.hostloc.com/forum-*.html
-// @match        https://www.hostloc.com/forum.php?mod=forumdisplay&fid=*
-// @match        https://www.hostloc.com/thread-*.html
-// @match        https://www.hostloc.com/forum.php?mod=viewthread&tid=*
-// @match        https://bbs.pcbeta.com/forum-*.html
-// @match        https://bbs.pcbeta.com/forum.php?mod=forumdisplay&fid=*
-// @match        https://bbs.pcbeta.com/thread-*.html
-// @match        https://bbs.pcbeta.com/forum.php?mod=viewthread&tid=*
-// @match        https://bbs.pcbeta.com/viewthread-*.html
-// @match        https://bbs.huorong.cn/forum-*.html
-// @match        https://bbs.huorong.cn/forum.php?mod=forumdisplay&fid=*
-// @match        https://bbs.huorong.cn/thread-*.html
-// @match        https://bbs.huorong.cn/forum.php?mod=viewthread&tid=*
-// @match        https://iya.app/forum-*.html
-// @match        https://iya.app/forum.php?mod=forumdisplay&fid=*
-// @match        https://iya.app/thread-*.html
-// @match        https://iya.app/forum.php?mod=viewthread&tid=*
-// @match        https://www.dospy.wang/forum-*.html
-// @match        https://www.dospy.wang/forum.php?mod=forumdisplay&fid=*
-// @match        https://www.dospy.wang/thread-*.html
-// @match        https://www.dospy.wang/forum.php?mod=viewthread&tid=*
-// @match        https://www.aihao.cc/forum-*.html
-// @match        https://www.aihao.cc/forum.php?mod=forumdisplay&fid=*
-// @match        https://www.aihao.cc/thread-*.html
-// @match        https://www.aihao.cc/forum.php?mod=viewthread&tid=*
-// @match        https://bbs.3dmgame.com/forum-*.html
-// @match        https://bbs.3dmgame.com/forum.php?mod=forumdisplay&fid=*
-// @match        https://bbs.3dmgame.com/thread-*.html
-// @match        https://bbs.3dmgame.com/forum.php?mod=viewthread&tid=*
-// @match        https://home.x64bbs.cn/forum-*.html
-// @match        https://home.x64bbs.cn/forum.php?mod=forumdisplay&fid=*
-// @match        https://home.x64bbs.cn/thread-*.html
-// @match        https://home.x64bbs.cn/forum.php?mod=viewthread&tid=*
+// @match        https://www.dismall.com/*
+// @match        https://www.52pojie.cn/*
+// @match        https://www.right.com.cn/forum/*
+// @match        https://bbs.kafan.cn/*
+// @match        https://hostloc.com/*
+// @match        https://www.hostloc.com/*
+// @match        https://bbs.pcbeta.com/*
+// @match        https://bbs.huorong.cn/*
+// @match        https://bbs.360.cn/*
+// @match        https://iya.app/*
+// @match        https://www.dospy.wang/*
+// @match        https://www.aihao.cc/*
+// @match        https://club.excelhome.net/*
+// @match        https://bbs.3dmgame.com/*
+// @match        https://home.x64bbs.cn/*
 // @grant        unsafeWindow
 // @grant        GM_addStyle
 // @grant        GM_getValue
@@ -132,6 +98,11 @@
         // 代码美化：true/false
         // 程式碼美化：true/false
         code_beautification: true,
+
+        // Block Baidu_tongji code: true/false
+        // 屏蔽百度统计: true/false
+        // 屏蔽百度統計: true/false
+        block_baidu_hm: true,
 
         // Scene Mode: 'Standard', 'Family', 'Office'
         // 场景模式: 'Standard', 'Family', 'Office'
@@ -746,12 +717,47 @@
     var display_check_in_button = true;
     var display_lock_skin_button = false;
 
-    if (site === 'KAFAN') {
-        // Auto Check-in
-        if (member) {
-            const status_images = document.getElementsByClassName('qq_bind');
-            if (!!status_images.length) {
-                !!status_images[0].src.slice(-6, -4) === 'dk' && document.getElementById('pper_a').click();
+    if (member && (site === 'KAFAN')) {
+        let imgElement = document.querySelector('#pper_a .qq_bind');
+        if (imgElement) {
+            let src = imgElement.src;
+            if (src.includes('wb.png')) {
+                GM_log('Check-in status: have been checked in.');
+            } else if (src.includes('dk.png')) {
+                imgElement.click();
+                GM_log('Automatic Check-in: Successful Check-in.');
+            }
+            display_check_in_button = false;
+        }
+    }
+
+    if (member && (site === '52POJIE')) {
+        let link = document.querySelector('a[href*="home.php?mod=task&do=apply&id=2"]');
+        if (link) {
+            let imgElement = link.querySelector('.qq_bind')
+            if (imgElement) {
+                let src = imgElement.src;
+                if (src.includes('wbs.png')) {
+                    GM_log('Check-in status: have been checked in.');
+                } else if (src.includes('qds.png')) {
+                    imgElement.click();
+                    GM_log('Automatic Check-in: Successful Check-in.');
+                }
+            }
+        }
+        display_check_in_button = false;
+    }
+
+    if (member && (site === 'X64BBS')) {
+        let link = document.querySelector('a[href*="plugin.php?id=study_daily_attendance:daily_attendance"]');
+        if (link) {
+            let fontElement = Array.from(link.querySelectorAll('font')).find(font => 
+                font.style.color === 'red' && font.textContent.includes('打卡签到')
+            );
+            if (fontElement) {
+                GM_log('找到了"打卡签到"元素');
+                fontElement.click();
+                GM_log('Automatic Check-in: Successful Check-in.');
             }
         }
         display_check_in_button = false;
@@ -1005,14 +1011,14 @@
                     return false;
                 }
                 if (site === 'X64BBS') {
-                    setTimeout(() => {
-                        let request = new XMLHttpRequest();
-                        let space = '//home.x64bbs.cn/plugin.php?id=study_daily_attendance:daily_attendance&fhash=' + document.getElementsByName('formhash')[0].value;
-                        request.open('get', space);
-                        request.send();
-                    }, 1000);
+                    showWindow('study_daily_attendance', 'plugin.php?id=study_daily_attendance:daily_attendance&fhash=' + document.getElementsByName('formhash')[0].value);
                     return false
                 }
+                if (site === 'KAFAN') {
+                    showWindow('dsu_amupper', 'plugin.php?id=dsu_amupper&ppersubmit=true&formhash=' + document.getElementsByName('formhash')[0].value);
+                    return false;
+                }
+
                 for (let i = 0; i < 10; i++) {
                     setTimeout(() => {
                         let request = new XMLHttpRequest();
