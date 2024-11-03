@@ -4,7 +4,7 @@
 // @name:zh-CN   论坛大师・Discuz！修改版
 // @name:zh-TW   論壇大師・Discuz！修改版
 // @namespace    Forum Master・Discuz!-mxdh (Update by wwwab)
-// @version      1.3.0
+// @version      1.3.1
 // @icon         https://discuz.dismall.com/favicon.ico
 // @description  Forum Master - Discuz!　Beautify the interface, Remove ads, Enhance functions.
 // @description:en    Forum Master - Discuz!　Beautify the interface, Remove ads, Enhance functions.
@@ -117,7 +117,7 @@
         // Add a tail automatically at the end of the reply: true/false; Tail content: Text
         // 回帖小尾巴: true/false；回帖小尾巴内容: Text
         // 回帖小尾巴: true/false；回帖小尾巴內容: Text
-        reply_tail: true,
+        reply_tail: false,
         reply_tail_content: '  喵～',
 
         // Scene Mode: 'Standard', 'Family', 'Office'
