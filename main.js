@@ -4,7 +4,7 @@
 // @name:zh-CN   论坛大师・Discuz！修改版
 // @name:zh-TW   論壇大師・Discuz！修改版
 // @namespace    Forum Master・Discuz!-mxdh (Update by wwwab)
-// @version      1.3.5
+// @version      1.3.6
 // @icon         https://discuz.dismall.com/favicon.ico
 // @description  Forum Master - Discuz!　Beautify the interface, Remove ads, Enhance functions.
 // @description:en    Forum Master - Discuz!　Beautify the interface, Remove ads, Enhance functions.
@@ -773,7 +773,7 @@
         display_lock_skin_button = true;
     }
 
-    if (GLOBAL_CONFIG.lock_skin) {
+    if (lock_skin) {
         if (site === 'KAFAN') {
             let cssLink1 = document.createElement('link');
             cssLink1.rel = 'stylesheet';
