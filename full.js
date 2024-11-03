@@ -1091,6 +1091,7 @@
         !!fastre && skip_bottom(replyfast);
     }
 
+
     // 回帖字数限制绕过 - (1)获取回帖字数不足时的填充内容 · Start
     function get_WordCountLimitBypass_Attach_Content() {
         switch (site) {
@@ -1126,6 +1127,8 @@
             }, 100);
         }
     }
+
+
     // 回帖字数限制绕过 - (3)在主题帖最下方的快速回帖栏内字数不足时进行填充 · Start
     const fastPostMessage = document.getElementById('fastpostmessage');
 
