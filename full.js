@@ -4,7 +4,7 @@
 // @name:zh-CN   论坛大师・Discuz！修改版
 // @name:zh-TW   論壇大師・Discuz！修改版
 // @namespace    Forum Master・Discuz!-mxdh (Update by wwwab)
-// @version      1.1.5
+// @version      1.1.6
 // @icon         https://discuz.dismall.com/favicon.ico
 // @description  Forum Master - Discuz!　Beautify the interface, Remove ads, Enhance functions.
 // @description:en    Forum Master - Discuz!　Beautify the interface, Remove ads, Enhance functions.
@@ -17,12 +17,24 @@
 // @match        http://*/forum.php?mod=viewthread&tid=*
 // @match        http://*/viewthread-*.html
 // @match        http://*/fourm/thread-*.html
+// @match        http://*/forum.php?mod=*
+// @match        http://*/home.php?mod=*
+// @match        http://*/archiver/fid-*.html
+// @match        http://*/archiver/?fid-*.html
+// @match        http://*/archiver/tid-*.html
+// @match        http://*/archiver/?tid-*.html
 // @match        https://*/forum-*.html
 // @match        https://*/forum.php?mod=forumdisplay&fid=*
 // @match        https://*/thread-*.html
 // @match        https://*/forum.php?mod=viewthread&tid=*
 // @match        https://*/viewthread-*.html
 // @match        https://*/forum/thread-*.html
+// @match        https://*/forum.php?mod=*
+// @match        https://*/home.php?mod=*
+// @match        https://*/archiver/fid-*.html
+// @match        https://*/archiver/?fid-*.html
+// @match        https://*/archiver/tid-*.html
+// @match        https://*/archiver/?tid-*.html
 // @grant        unsafeWindow
 // @grant        GM_addStyle
 // @grant        GM_getValue
@@ -95,6 +107,11 @@
         // 代码美化：true/false
         // 程式碼美化：true/false
         code_beautification: true,
+
+        // Block Baidu_tongji code: true/false
+        // 屏蔽百度统计: true/false
+        // 屏蔽百度統計: true/false
+        block_baidu_hm: true,
 
         // Scene Mode: 'Standard', 'Family', 'Office'
         // 场景模式: 'Standard', 'Family', 'Office'
@@ -711,15 +728,50 @@
     var display_check_in_button = true;
     var display_lock_skin_button = false;
 
-    if (site === 'KAFAN') {
-        // Auto Check-in
-        if (member) {
-            const status_images = document.getElementsByClassName('qq_bind');
-            if (!!status_images.length) {
-                !!status_images[0].src.slice(-6, -4) === 'dk' && document.getElementById('pper_a').click();
-                display_check_in_button = false;
+    if (member && (site === 'KAFAN')) {
+        let imgElement = document.querySelector('#pper_a .qq_bind');
+        if (imgElement) {
+            let src = imgElement.src;
+            if (src.includes('wb.png')) {
+                GM_log('Check-in status: have been checked in.');
+            } else if (src.includes('dk.png')) {
+                imgElement.click();
+                GM_log('Automatic Check-in: Successful Check-in.');
+            }
+            display_check_in_button = false;
+        }
+    }
+
+    if (member && (site === '52POJIE')) {
+        let link = document.querySelector('a[href*="home.php?mod=task&do=apply&id=2"]');
+        if (link) {
+            let imgElement = link.querySelector('.qq_bind')
+            if (imgElement) {
+                let src = imgElement.src;
+                if (src.includes('wbs.png')) {
+                    GM_log('Check-in status: have been checked in.');
+                } else if (src.includes('qds.png')) {
+                    imgElement.click();
+                    GM_log('Automatic Check-in: Successful Check-in.');
+                }
             }
         }
+        display_check_in_button = false;
+    }
+
+    if (member && (site === 'X64BBS')) {
+        let link = document.querySelector('a[href*="plugin.php?id=study_daily_attendance:daily_attendance"]');
+        if (link) {
+            let fontElement = Array.from(link.querySelectorAll('font')).find(font => 
+                font.style.color === 'red' && font.textContent.includes('打卡签到')
+            );
+            if (fontElement) {
+                GM_log('找到了"打卡签到"元素');
+                fontElement.click();
+                GM_log('Automatic Check-in: Successful Check-in.');
+            }
+        }
+        display_check_in_button = false;
     }
 
     if (site === 'KAFAN') {
@@ -970,12 +1022,7 @@
                     return false;
                 }
                 if (site === 'X64BBS') {
-                    setTimeout(() => {
-                        let request = new XMLHttpRequest();
-                        let space = '//home.x64bbs.cn/plugin.php?id=study_daily_attendance:daily_attendance&fhash=' + document.getElementsByName('formhash')[0].value;
-                        request.open('get', space);
-                        request.send();
-                    }, 1000);
+                    showWindow('study_daily_attendance', 'plugin.php?id=study_daily_attendance:daily_attendance&fhash=' + document.getElementsByName('formhash')[0].value);
                     return false
                 }
                 if (site === 'KAFAN') {
