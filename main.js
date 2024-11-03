@@ -1116,7 +1116,6 @@
     // 回帖字数限制绕过 - (2)字数填充函数 & 回帖小尾巴功能函数 · Start
     function editor_content(PostMessage) {
         let PostMessageContent = PostMessage.value;
-        GM_log(PostMessageContent)
         if (GLOBAL_CONFIG.word_count_limit_bypass && PostMessageContent) {
             if (GLOBAL_CONFIG.reply_tail) {
                 PostMessageContent = PostMessageContent.trim();
