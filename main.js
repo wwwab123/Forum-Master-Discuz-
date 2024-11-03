@@ -4,7 +4,7 @@
 // @name:zh-CN   论坛大师・Discuz！修改版
 // @name:zh-TW   論壇大師・Discuz！修改版
 // @namespace    Forum Master・Discuz!-mxdh (Update by wwwab)
-// @version      1.3.0
+// @version      1.3.5
 // @icon         https://discuz.dismall.com/favicon.ico
 // @description  Forum Master - Discuz!　Beautify the interface, Remove ads, Enhance functions.
 // @description:en    Forum Master - Discuz!　Beautify the interface, Remove ads, Enhance functions.
@@ -166,7 +166,7 @@
     const site_pos = get_site_pos();
     const site = hn.split('.').slice(site_pos, site_pos + 1).join().toUpperCase();
 
-    GM_log("Site name:", site);
+    GM_log(`Site name: ${site}`);
 
     // Scene mode: Standard, Family, Office
     var scene_mode = GM_getValue(site + '_SCENE_MODE') || GLOBAL_CONFIG.scene_mode;
@@ -183,14 +183,10 @@
 
     // Test code
     const ua = window.navigator.userAgent;
-    GM_log('User-Agent:', ua);
-    GM_log('');
+    GM_log(`User-Agent: ${ua}`);
 
-    GM_log('Scene mode:', scene_mode);
-    GM_log(typeof scene_mode);
-    GM_log('Detection mode:', detection_mode);
-    GM_log(typeof detection_mode);
-    GM_log('');
+    GM_log(`Scene mode: ${scene_mode} (${typeof scene_mode})`);
+    GM_log(`Detection mode: ${detection_mode} (${typeof detection_mode})`);
 
     const thread_sortord_dic = {
         unlocked: '未锁定',
@@ -504,8 +500,7 @@
     // Login status
     const member = !!document.getElementById('extcreditmenu') || !!document.getElementById('myprompt') || !!document.getElementById('myrepeats');
 
-    GM_log('Login status:', member);
-    GM_log('');
+    GM_log(`Login status: ${member}`);
 
     // Default avatar
     function default_avatar() {
@@ -778,7 +773,7 @@
         display_lock_skin_button = true;
     }
 
-    if (lock_skin) {
+    if (GLOBAL_CONFIG.lock_skin) {
         if (site === 'KAFAN') {
             let cssLink1 = document.createElement('link');
             cssLink1.rel = 'stylesheet';
@@ -792,6 +787,17 @@
             cssLink2.href = 'https://a.kafan.cn/static/template/comeing_city/style/t13/style.css?b33';
             document.head.appendChild(cssLink2);
         }
+    }
+
+    if (GLOBAL_CONFIG.block_baidu_hm) {
+        const scriptsToRemove1 = document.querySelectorAll('script[src*="hm.baidu.com"]');
+        if (scriptsToRemove1.length > 0) {
+            GM_log("Found baidu_tongji code.");
+        }
+        scriptsToRemove1.forEach(function(script) {
+            script.remove();
+            GM_log("Remove baidu_tongji code successfully.")
+        });
     }
 
     switch (thread_sortord) {
@@ -1241,7 +1247,8 @@
                 const currentLength = Number(getCount(alertContent).currentLength)
                 const systemMinLimit = Number(getCount(alertContent).systemMinLimit)
                 if (currentLength < systemMinLimit) {
-                    show_dialog('检测到您输入的内容可能未达到系统字数限制，您可以增加字数或者复制"\n\n[color=#ffffff]插入空白字符以填充字数[/color]"到尾部以解决该问题')
+                    show_dialog('检测到您输入的内容可能未达到系统字数限制，您可以增加字数或者复制"\n\n[color=#ffffff]插入空白字符以填充字数[/color]"到尾部以解决该问题');
+                    GM_log('检测到您输入的内容可能未达到系统字数限制，您可以增加字数或者复制"\n\n[color=#ffffff]插入空白字符以填充字数[/color]"到尾部以解决该问题');
                 }
             }, false);
         }
