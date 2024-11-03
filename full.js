@@ -4,7 +4,7 @@
 // @name:zh-CN   论坛大师・Discuz！修改版
 // @name:zh-TW   論壇大師・Discuz！修改版
 // @namespace    Forum Master・Discuz!-mxdh (Update by wwwab)
-// @version      1.1.6
+// @version      1.2.0
 // @icon         https://discuz.dismall.com/favicon.ico
 // @description  Forum Master - Discuz!　Beautify the interface, Remove ads, Enhance functions.
 // @description:en    Forum Master - Discuz!　Beautify the interface, Remove ads, Enhance functions.
@@ -108,6 +108,11 @@
         // 屏蔽百度统计: true/false
         // 屏蔽百度統計: true/false
         block_baidu_hm: true,
+
+        // Bypass the word limit of reply: true/false
+        // 回帖字数限制绕过: true/false
+        // 回帖字數限制繞過: true/false
+        word_count_limit_bypass: true,
 
         // Scene Mode: 'Standard', 'Family', 'Office'
         // 场景模式: 'Standard', 'Family', 'Office'
@@ -1082,52 +1087,160 @@
         }
         const fastre = member && document.getElementsByClassName('fastre')[0];
         !!fastre && skip_bottom(fastre);
+        const replyfast = member && document.getElementsByClassName('replyfast')[0];
+        !!fastre && skip_bottom(replyfast);
     }
 
-
-    function get_attach_content() {
+    // 回帖字数限制绕过 - (1)获取回帖字数不足时的填充内容 · Start
+    function get_WordCountLimitBypass_Attach_Content() {
         switch (site) {
             case 'KAFAN':
+                return '';
+            case '52POJIE':
                 return '';
             case 'HOSTLOC':
                 return '󠀠'.repeat(10);
             default:
-                return '\n\n[color=#ffffff]插入空白字符以填充字数[/color]';
+                return '\n\n[color=#ffffff]插入空白字符以填充字数[/color]'; // 默认为纯白色字体的"插入空白字符以填充字数"
         }
     }
 
-    const attachContent = get_attach_content();
+    if (GLOBAL_CONFIG.word_count_limit_bypass) {
+        var WordCountLimitBypass_AttachContent = get_WordCountLimitBypass_Attach_Content();
+    } else {
+        var WordCountLimitBypass_AttachContent = '';
+    }
+    // 回帖字数限制绕过 - (1)获取回帖字数不足时的填充文本 · End
 
-    const fastPostMessage = document.getElementById('fastpostmessage');
 
-    function editor_content() {
-        let fastPostMessageContent = fastPostMessage.value;
-        if (fastPostMessageContent && fastPostMessageContent.length < 20) {
-            fastPostMessageContent = fastPostMessageContent.trim();
-            fastPostMessage.style.opacity = '0';
-            fastPostMessage.value = fastPostMessageContent.concat(attachContent);
+    // 回帖字数限制绕过 - (2)字数填充函数 · Start
+    function editor_content(PostMessage) {
+        let PostMessageContent = PostMessage.value;
+        if (PostMessageContent && PostMessageContent.length < 20) {
+            PostMessageContent = PostMessageContent.trim();
+            PostMessage.style.opacity = '0';
+            PostMessage.value = PostMessageContent.concat(WordCountLimitBypass_AttachContent);
             setTimeout(() => {
-                fastPostMessage.value = fastPostMessageContent;
-                fastPostMessage.style.opacity = '1';
+                PostMessage.value = PostMessageContent;
+                PostMessage.style.opacity = '1';
             }, 100);
         }
     }
+    // 回帖字数限制绕过 - (3)在主题帖最下方的快速回帖栏内字数不足时进行填充 · Start
+    const fastPostMessage = document.getElementById('fastpostmessage');
 
     !!fastPostMessage && fastPostMessage.removeAttribute('onkeydown');
 
     !!fastPostMessage && fastPostMessage.addEventListener('keydown', function (event) {
         if (event.ctrlKey && event.which === 13) {
-            editor_content();
+            editor_content(fastPostMessage);
             seditor_ctlent(event, 'fastpostvalidate($(\'fastpostform\'))');
         }
         if (event.altKey && event.which === 83) {
-            editor_content();
+            editor_content(fastPostMessage);
             seditor_ctlent(event, 'fastpostvalidate($(\'fastpostform\'))');
         }
     }, false);
 
     const fastPostSubmit = document.getElementById('fastpostsubmit');
-    !!fastPostSubmit && fastPostSubmit.addEventListener('click', editor_content, false);
+    !!fastPostSubmit && fastPostSubmit.addEventListener('click', () => {
+        editor_content(fastPostMessage);
+    }, false);
+    // 回帖字数限制绕过 - (3)在主题帖最下方的快速回帖栏内字数不足时进行填充 · End
+
+
+    // 回帖字数限制绕过 - (4)回复他人楼层时在"参与/回复主题"框内字数不足时进行填充 · Start
+    function bindClicksToFastres() {
+        const fastres = document.getElementsByClassName('fastre');
+        Array.from(fastres).forEach((elem, index) => {
+            if (index !== 0) {                                    // 跳过第一个元素，因为第一个元素已由上方skip_bottom()函数进行处理
+                elem.removeEventListener('click', () => {         // 避免重复监听
+                    handleFastreClick();
+                }, false);
+                elem.addEventListener('click', () => {
+                    handleFastreClick();
+                }, false);
+            }
+        });
+    }
+ 
+    // postSubmit.__eventBound属性用于确保对同一个postsubmit按钮的多次点击不会导致重复绑定事件监听器，避免了潜在的内存泄漏或其他问题。
+    function handleFastreClick() {
+        // 使用MutationObserver等待postmessage和postsubmit的出现
+        const observer = new MutationObserver((mutations, obs) => {
+            const postMessage = document.getElementById('postmessage');
+            const postSubmit = document.getElementById('postsubmit');
+            if (postMessage && postSubmit && !postSubmit.__eventBound) { // 检查postmessage和postsubmit是否存在，检查postSubmit是否已经绑定了事件监听器
+                GM_log("Reply window has appeared."); // postmessage和postsubmit已出现
+                postSubmit.__eventBound = true; // 标记postSubmit已经绑定了事件监听器
+                postSubmit.addEventListener('click', () => {
+                    GM_log('postsubmit被点击');
+                    editor_content(postMessage);
+                    ResetState();
+                }, false);
+                obs.disconnect(); // 断开观察者
+            }
+        });
+        observer.observe(document.body, { childList: true, subtree: true });
+    }
+
+    function ResetState() {
+        // 重置监听状态，准备下一次点击
+        const postSubmit = document.getElementById('postsubmit');
+        if (postSubmit) {
+            delete postSubmit.__eventBound; // 移除标记以允许再次监听
+        }
+    }
+    
+    bindClicksToFastres();
+    // 回帖字数限制绕过 - (4)回复他人楼层时在"参与/回复主题"框内字数不足时进行填充 · End
+
+
+    // 回帖字数限制绕过 - (5)在高级模式提交时获取字数检查并判断当前长度是否符合系统限制 · Start
+    // 执行字数检查并判断当前长度是否符合系统限制
+    function checkWordCount() {
+        const checkButton = document.getElementById('e_chck');
+        if (checkButton) {
+            const postSubmit = document.getElementById('postsubmit');
+            !!postSubmit && postSubmit.addEventListener('click', () => {
+                checkButton.click();
+                const alertContent = getAlertInfoContent();
+                closeDialog();
+                const currentLength = Number(getCount(alertContent).currentLength)
+                const systemMinLimit = Number(getCount(alertContent).systemMinLimit)
+                if (currentLength < systemMinLimit) {
+                    show_dialog('检测到您输入的内容可能未达到系统字数限制，您可以增加字数或者复制"\n\n[color=#ffffff]插入空白字符以填充字数[/color]"到尾部以解决该问题')
+                }
+            }, false);
+        }
+    }
+    // 获取字数检查内容
+    function getAlertInfoContent() {
+        const alertInfo = document.querySelector('.alert_info p');
+        return alertInfo ? alertInfo.textContent : '';
+    }
+    // 关闭字数检查弹窗
+    function closeDialog() {
+        const closeButton = document.getElementById('fwin_dialog_close');
+        if (closeButton) {
+            closeButton.click();
+        }
+    }
+    checkWordCount();
+
+    function getCount(text) {
+        const regex1 = /当前长度: (.*?) 字节/;
+        const regex2 = /系统限制: (.*?) 到/;
+        const regex3 = /到 (.*?) 字节/;
+        const match1 = text.match(regex1);
+        const match2 = text.match(regex2);
+        const match3 = text.match(regex3);
+        const currentLength = match1 ? match1[1] : null;
+        const systemMinLimit = match2 ? match2[1] : null;
+        const systemMaxLimit = match3 ? match3[1] : null;
+        return { currentLength:currentLength, systemMinLimit:systemMinLimit, systemMaxLimit: systemMaxLimit}
+    }
+    // 回帖字数限制绕过 - (5)在高级模式提交时获取字数检查并判断当前长度是否符合系统限制 · End
 
 
     // Automatically expand all posts
