@@ -12,9 +12,7 @@
 // @description:zh-TW 論壇大師（繁體中文）・Discuz!　界面美化、移除廣告、功能增強……
 // @author       hostname,mxdh,wwwab
 // @match        http://*/forum-*.html
-// @match        http://*/forum.php?mod=forumdisplay&fid=*
 // @match        http://*/thread-*.html
-// @match        http://*/forum.php?mod=viewthread&tid=*
 // @match        http://*/viewthread-*.html
 // @match        http://*/fourm/thread-*.html
 // @match        http://*/forum.php?mod=*
@@ -24,9 +22,7 @@
 // @match        http://*/archiver/tid-*.html
 // @match        http://*/archiver/?tid-*.html
 // @match        https://*/forum-*.html
-// @match        https://*/forum.php?mod=forumdisplay&fid=*
 // @match        https://*/thread-*.html
-// @match        https://*/forum.php?mod=viewthread&tid=*
 // @match        https://*/viewthread-*.html
 // @match        https://*/forum/thread-*.html
 // @match        https://*/forum.php?mod=*
