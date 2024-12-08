@@ -1194,7 +1194,7 @@
         }
     }
 
-    if (GLOBAL_CONFIG.word_count_limit_bypass) {
+    if (Message_Edit_CONFIG.word_count_limit_bypass) {
         var WordCountLimitBypass_AttachContent = get_WordCountLimitBypass_Attach_Content();
     } else {
         var WordCountLimitBypass_AttachContent = '';
@@ -1487,12 +1487,6 @@
 
     if (GLOBAL_CONFIG.theme_beautification) {
         GM_addStyle (`
-        div.pls.favatar {
-            background-image: url('https://img1.baidu.com/it/u=710094272,181047437&fm=253&fmt=auto&app=138&f=JPEG?w=800&h=1428') !important;
-            background-position: center !important;
-            background-repeat: no-repeat !important;
-            background-size: cover !important;
-        }
         td.pls, div.tns.xg2, a.xi2, p.xg1 {
             color: #66CCFF !important;
         }
@@ -1511,6 +1505,16 @@
             font-weight: bold;
         }
         `);
+        if (member) {
+            GM_addStyle (`
+        div.pls.favatar {
+            background-image: url('https://img1.baidu.com/it/u=710094272,181047437&fm=253&fmt=auto&app=138&f=JPEG?w=800&h=1428') !important;
+            background-position: center !important;
+            background-repeat: no-repeat !important;
+            background-size: cover !important;
+        }
+        `);
+        }
     }
 
 
