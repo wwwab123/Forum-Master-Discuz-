@@ -1232,11 +1232,11 @@
 
     !!fastPostMessage && fastPostMessage.addEventListener('keydown', function (event) {
         if (event.ctrlKey && event.which === 13) {
-            editor_content(fastPostMessage);
+            editor_content(fastPostMessage, 1);
             seditor_ctlent(event, 'fastpostvalidate($(\'fastpostform\'))');
         }
         if (event.altKey && event.which === 83) {
-            editor_content(fastPostMessage);
+            editor_content(fastPostMessage, 1);
             seditor_ctlent(event, 'fastpostvalidate($(\'fastpostform\'))');
         }
     }, false);
