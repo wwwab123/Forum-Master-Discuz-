@@ -1532,10 +1532,8 @@
         }
     }
 
+
     // Compatibility settings
-
-
-
 
     // Cascading Style Sheets・www.hostloc.com
     site === 'HOSTLOC' && GM_addStyle(`
