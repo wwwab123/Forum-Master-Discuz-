@@ -4,7 +4,7 @@
 // @name:zh-CN   论坛大师・Discuz！修改版
 // @name:zh-TW   論壇大師・Discuz！修改版
 // @namespace    Forum Master・Discuz!-mxdh (Update by wwwab)
-// @version      1.3.6
+// @version      1.4.0
 // @icon         https://discuz.dismall.com/favicon.ico
 // @description  Forum Master - Discuz!　Beautify the interface, Remove ads, Enhance functions.
 // @description:en    Forum Master - Discuz!　Beautify the interface, Remove ads, Enhance functions.
@@ -38,6 +38,8 @@
 // @grant        GM_setValue
 // @grant        GM_xmlhttpRequest
 // @license GPL-3.0
+// @downloadURL https://update.greasyfork.org/scripts/511735/Forum%20Master%E3%83%BBDiscuz%21%20Revision.user.js
+// @updateURL https://update.greasyfork.org/scripts/511735/Forum%20Master%E3%83%BBDiscuz%21%20Revision.meta.js
 // ==/UserScript==
 
 (function () {
@@ -109,16 +111,20 @@
         // 屏蔽百度統計: true/false
         block_baidu_hm: true,
 
-        // Bypass the word limit of reply: true/false
-        // 回帖字数限制绕过: true/false
-        // 回帖字數限制繞過: true/false
-        word_count_limit_bypass: true,
+        // Turn the avatar to high definition (Apply big size avatar): true/false
+        // 头像转为高清晰度: true/false
+        // 頭像轉為高清晰度: true/false
+        big_size_avatar: false,
 
-        // Add a tail automatically at the end of the reply: true/false; Tail content: Text
-        // 回帖小尾巴: true/false；回帖小尾巴内容: Text
-        // 回帖小尾巴: true/false；回帖小尾巴內容: Text
-        reply_tail: false,
-        reply_tail_content: '  喵～',
+        // Picture Optimization (Overwrite the thumb picture into big size picture): true/false
+        // 图片优化(将预览图覆盖为大图): true/false
+        // 圖片優化(將預覽圖覆蓋為大圖): true/false
+        picture_optimization: false,
+
+        // Theme beautification: true/false
+        // 主题美化: true/false
+        // 主題美化: true/false
+        theme_beautification: false,
 
         // Scene Mode: 'Standard', 'Family', 'Office'
         // 场景模式: 'Standard', 'Family', 'Office'
@@ -137,6 +143,41 @@
 
     }
     // Global Settings · End
+
+
+    // Message Edit Settings · Start
+    const Message_Edit_CONFIG = {
+
+        // Bypass the word limit of reply: true/false
+        // 回帖字数限制绕过: true/false
+        // 回帖字數限制繞過: true/false
+        word_count_limit_bypass: true,
+
+        // Add a tail automatically at the end of the reply: true/false; Tail content: Text
+        // 回帖小尾巴: true/false；回帖小尾巴内容: Text
+        // 回帖小尾巴: true/false；回帖小尾巴內容: Text
+        reply_tail: false,
+        reply_tail_content: '  喵～',
+
+        // Add a prefix automatically at the end of the reply: true/false; Prefix content: Text
+        // 回帖小前缀: true/false；回帖小前缀内容: Text
+        // 回帖小前綴: true/false；回帖小前綴内容: Text
+        reply_prefix: false,
+        reply_prefix_content: '',
+
+        // Enable in the private messages post: true/false
+        // 在私信中启用: true/false
+        // 在私信中啟用: true/false
+        private_messages_Enable: false,
+
+        // Enable in the comment messages post: true/false
+        // 在点评中启用: true/false
+        // 在點評中啟用: true/false
+        comment_messages_Enable: false,
+
+    }
+    // Message Edit Settings · End
+
 
     // Below is the core code
 
@@ -544,6 +585,34 @@
         }
     }
 
+    function default_big_size_avatar() {
+        if (site === '52POJIE') {
+            GM_addStyle(`
+                .pls .avatar img,
+                .avtm img,
+                #um .avt img,
+                #tath img,
+                .rate table img,
+                .cm .vm img,
+                .card_mn .avt img {
+                    content: url('//avatar.52pojie.cn/images/noavatar_big.gif');
+                }
+            `);
+        } else {
+            GM_addStyle(`
+                .pls .avatar img,
+                .avtm img,
+                #um .avt img,
+                #tath img,
+                .rate table img,
+                .cm .vm img,
+                .card_mn .avt img {
+                    content: url('//uc.huorong.cn/images/noavatar_big.gif');
+                }
+            `);
+        }
+    }
+
     // Default avatar for Family attach
     function default_avatar_for_family_attach() {
         GM_addStyle(`
@@ -604,7 +673,6 @@
         `);
     }
 
-
     // Show Dialog
     function show_dialog(message) {
         try {
@@ -627,14 +695,22 @@
 
         case 'Family':
             // Set as Default avatar
-            default_avatar();
+            if (GLOBAL_CONFIG.big_size_avatar) {
+                default_big_size_avatar();
+            } else {
+                default_avatar();
+            }
             // Set as Default avatar for Family attach
             default_avatar_for_family_attach();
             break;
 
         case 'Office':
             // Set as Default avatar
-            default_avatar();
+            if (GLOBAL_CONFIG.big_size_avatar) {
+                default_big_size_avatar();
+            } else {
+                default_avatar();
+            }
             // Set as Simplified avatar
             simplified_avatar();
             // Set as Hidden Signature
@@ -1104,7 +1180,7 @@
     }
 
 
-    // 回帖字数限制绕过 - (1)获取回帖字数不足时的填充内容 · Start
+    // Message_Edit_Module(1) · Start
     function get_WordCountLimitBypass_Attach_Content() {
         switch (site) {
             case 'KAFAN':
@@ -1123,55 +1199,33 @@
     } else {
         var WordCountLimitBypass_AttachContent = '';
     }
-    // 回帖字数限制绕过 - (1)获取回帖字数不足时的填充文本 · End
+    // Message_Edit_Module(1) · End
 
 
-    // 回帖字数限制绕过 - (2)字数填充函数 & 回帖小尾巴功能函数 · Start
-    function editor_content(PostMessage) {
-        let PostMessageContent = PostMessage.value;
-        if (GLOBAL_CONFIG.word_count_limit_bypass && PostMessageContent) {
-            if (GLOBAL_CONFIG.reply_tail) {
-                PostMessageContent = PostMessageContent.trim();
-                PostMessage.style.opacity = '0';
-                if (PostMessageContent.length < 20) {
-                    GM_log("editor_content_mode1")
-                    PostMessage.value = PostMessageContent.concat(GLOBAL_CONFIG.reply_tail_content + WordCountLimitBypass_AttachContent);
-                } else {
-                    GM_log("editor_content_mode2")
-                    PostMessage.value = PostMessageContent.concat(GLOBAL_CONFIG.reply_tail_content);
-                }
-                setTimeout(() => {
-                    PostMessage.value = PostMessageContent;
-                    PostMessage.style.opacity = '1';
-                }, 100);
-            } else {
-                if (PostMessageContent && PostMessageContent.length < 20) {
-                    GM_log("editor_content_mode3")
-                    PostMessageContent = PostMessageContent.trim();
-                    PostMessage.style.opacity = '0';
-                    PostMessage.value = PostMessageConten.concat(WordCountLimitBypass_AttachContent);
-                    setTimeout(() => {
-                        PostMessage.value = PostMessageContent;
-                        PostMessage.style.opacity = '1';
-                    }, 100);
-                }
-            }
-        } else {
-            if (GLOBAL_CONFIG.reply_tail && PostMessageContent) {
-                GM_log("editor_content_mode4")
-                PostMessageContent = PostMessageContent.trim();
-                PostMessage.style.opacity = '0';
-                PostMessage.value = PostMessageContent.concat(GLOBAL_CONFIG.reply_tail_content);
-                setTimeout(() => {
-                    PostMessage.value = PostMessageContent;
-                    PostMessage.style.opacity = '1';
-                }, 100);
-            }
+    // Message_Edit_Module(2) · Start
+    function editor_content(Message, ifWordCountLimit) {
+        let OriginalMessageContent = Message.value;
+        let NewMessageContent = OriginalMessageContent.trim();
+        if (Message_Edit_CONFIG.word_count_limit_bypass && OriginalMessageContent && OriginalMessageContent.length < 20 && WordCountLimitBypass_AttachContent && ifWordCountLimit === 1) {
+            NewMessageContent = NewMessageContent.concat(WordCountLimitBypass_AttachContent);
         }
+        if (Message_Edit_CONFIG.reply_tail && OriginalMessageContent && Message_Edit_CONFIG.reply_tail_content) {
+            NewMessageContent = NewMessageContent.concat(Message_Edit_CONFIG.reply_tail_content);
+        }
+        if (Message_Edit_CONFIG.reply_prefix && OriginalMessageContent && Message_Edit_CONFIG.reply_prefix_content) {
+            NewMessageContent = Message_Edit_CONFIG.reply_prefix_content.concat(NewMessageContent);
+        }
+        Message.style.opacity = '0';
+        Message.value = `${NewMessageContent}`;
+        setTimeout(() => {
+            Message.value = OriginalMessageContent;
+            Message.style.opacity = '1';
+        }, 100);
     }
+    // Message_Edit_Module(2) · End
 
 
-    // 回帖字数限制绕过 - (3)在主题帖最下方的快速回帖栏内字数不足时进行填充 · Start
+    // Message_Edit_Module(3) · Start
     const fastPostMessage = document.getElementById('fastpostmessage');
 
     !!fastPostMessage && fastPostMessage.removeAttribute('onkeydown');
@@ -1189,59 +1243,87 @@
 
     const fastPostSubmit = document.getElementById('fastpostsubmit');
     !!fastPostSubmit && fastPostSubmit.addEventListener('click', () => {
-        editor_content(fastPostMessage);
+        editor_content(fastPostMessage, 1);
     }, false);
-    // 回帖字数限制绕过 - (3)在主题帖最下方的快速回帖栏内字数不足时进行填充 · End
 
 
-    // 回帖字数限制绕过 - (4)回复他人楼层时在"参与/回复主题"框内字数不足时进行填充 · Start
-    function bindClicksToFastres() {
-        const fastres = document.getElementsByClassName('fastre');
-        Array.from(fastres).forEach((elem, index) => {
-            if (index !== 0) {                                    // 跳过第一个元素，因为第一个元素已由上方skip_bottom()函数进行处理
-                elem.removeEventListener('click', () => {         // 避免重复监听
-                    handleFastreClick();
-                }, false);
-                elem.addEventListener('click', () => {
-                    handleFastreClick();
-                }, false);
-            }
-        });
+    // private_messages_edit_1
+    if (Message_Edit_CONFIG.private_messages_Enable) {
+        const replyMessage = document.getElementById('replymessage');
+        const pmSubmit = document.getElementById('pmsubmit');
+        !!pmSubmit && pmSubmit.addEventListener('click', () => {
+            editor_content(replyMessage, 1);
+        }, false);
     }
- 
-    // postSubmit.__eventBound属性用于确保对同一个postsubmit按钮的多次点击不会导致重复绑定事件监听器，避免了潜在的内存泄漏或其他问题。
-    function handleFastreClick() {
-        // 使用MutationObserver等待postmessage和postsubmit的出现
+    // Message_Edit_Module(3) · End
+
+
+    // Message_Edit_Module(4) · Start
+    function WindowProcessing(windowId,MessageId,SubmitButtonId,type,ifWordCountLimit) {
+        // 使用MutationObserver等待窗口和元素的出现
         const observer = new MutationObserver((mutations, obs) => {
-            const postMessage = document.getElementById('postmessage');
-            const postSubmit = document.getElementById('postsubmit');
-            if (postMessage && postSubmit && !postSubmit.__eventBound) { // 检查postmessage和postsubmit是否存在，检查postSubmit是否已经绑定了事件监听器
-                GM_log("Reply window has appeared."); // postmessage和postsubmit已出现
-                postSubmit.__eventBound = true; // 标记postSubmit已经绑定了事件监听器
-                postSubmit.addEventListener('click', () => {
-                    GM_log('postsubmit被点击');
-                    editor_content(postMessage);
-                    ResetState();
+            const window = document.getElementById(windowId);
+            const Message = document.getElementById(MessageId);
+            const SubmitButton = document.getElementById(SubmitButtonId);
+            if (window && Message && SubmitButton && !SubmitButton.__eventBound) {
+                SubmitButton.__eventBound = true; // 标记SubmitButton已经绑定了事件监听器
+                SubmitButton.addEventListener('click', () => {
+                    switch (type) {
+                        case 0:
+                            GM_log('postsubmit被点击');
+                            break;
+                        case 1:
+                            GM_log('pmsubmit_btn被点击');
+                            break;
+                        case 2:
+                            GM_log('commentsubmit被点击');
+                            break;
+                        default:
+                            break;
+                    }
+                    editor_content(Message,ifWordCountLimit);
+                    ResetState(SubmitButton);
                 }, false);
                 obs.disconnect(); // 断开观察者
             }
         });
         observer.observe(document.body, { childList: true, subtree: true });
     }
-
-    function ResetState() {
-        // 重置监听状态，准备下一次点击
-        const postSubmit = document.getElementById('postsubmit');
-        if (postSubmit) {
-            delete postSubmit.__eventBound; // 移除标记以允许再次监听
+    function ResetState(SubmitButtonId) {
+        // 重置监听状态
+        const SubmitButton = document.getElementById(SubmitButtonId);
+        if (SubmitButton) {
+            delete SubmitButton.__eventBound; // 移除标记以允许再次监听
         }
     }
-    
-    bindClicksToFastres();
-    // 回帖字数限制绕过 - (4)回复他人楼层时在"参与/回复主题"框内字数不足时进行填充 · End
+    function Execute_Message_Edit_Module4() {
+        if (page_type === 'thread page') {
+            WindowProcessing('fwin_content_reply','postmessage','postsubmit',0,1);
+        }
+
+        // private_messages_edit_2
+        if (Message_Edit_CONFIG.private_messages_Enable && page_type === 'thread page') {
+            WindowProcessing('fwin_content_sendpm','pmmessage','pmsubmit_btn',1,1);
+        }
+
+        // comment_message_edit
+        if (Message_Edit_CONFIG.comment_messages_Enable && page_type === 'thread page') {
+            WindowProcessing('fwin_content_comment','commentmessage','commentsubmit',2,0);
+        }
+    }
+    document.addEventListener('click', function(event) {
+        Execute_Message_Edit_Module4();
+    });
+    document.addEventListener('keydown', function(event) {
+        Execute_Message_Edit_Module4();
+    });
+    document.addEventListener('input', function(event) {
+        Execute_Message_Edit_Module4();
+    });
+    // Message_Edit_Module(4) · End
 
 
-    // 回帖字数限制绕过 - (5)在高级模式提交时获取字数检查并判断当前长度是否符合系统限制 · Start
+    // Message_Edit_Module(5) · Start
     // 执行字数检查并判断当前长度是否符合系统限制
     function checkWordCount() {
         const checkButton = document.getElementById('e_chck');
@@ -1286,11 +1368,155 @@
         const systemMaxLimit = match3 ? match3[1] : null;
         return { currentLength:currentLength, systemMinLimit:systemMinLimit, systemMaxLimit: systemMaxLimit}
     }
-    // 回帖字数限制绕过 - (5)在高级模式提交时获取字数检查并判断当前长度是否符合系统限制 · End
+    // Message_Edit_Module(5) · End
+
+
+    function toBigAvatar() {
+        const selectors = ['.pls .avatar img','.avtm img','.avt img','#tath img','.rate table img','.cm .vm img','.card_mn .avt img','.turing_listtxs img'];
+        selectors.forEach(selector => {
+            const elements = document.querySelectorAll(selector);
+            if (elements.length > 0) {
+                for (let i = 0; i < elements.length; i++) {
+                    let original = elements[i].src;
+                    let parts = original.split('/');
+                    parts[parts.length - 1] = parts[parts.length - 1].replace("middle","big");
+                    parts[parts.length - 1] = parts[parts.length - 1].replace("small","big");
+                    elements[i].src = parts.join('/');
+                    // if (original != elements[i].src) {
+                        // GM_log(`清晰度替换: From ${original} To ${elements[i].src}`);
+                    // }
+                }
+            }
+        });
+    }
+    function if_tdpre_y_clicked() {
+        const tdpre_y = document.getElementsByClassName('tdpre y');
+        Array.from(tdpre_y).forEach((elem) => {
+            elem.removeEventListener('click', () => {         // 避免重复监听
+                fastpreview();
+            }, false);
+            elem.addEventListener('click', () => {
+                fastpreview();
+            }, false);
+        });
+    }
+    function fastpreview() {
+        // 使用MutationObserver等待t_f和fastpreview的出现
+        const observer = new MutationObserver((mutations, obs) => {
+            const post = document.getElementsByClassName('t_f');
+            const fastpreview = document.getElementsByClassName('fastpreview');
+            if (post && fastpreview && page_type === 'forum page') {
+                GM_log("fastpreview window was changed.");
+                toBigAvatar();
+            }
+        });
+        observer.observe(document.body, { childList: true, subtree: true });
+    }
+    if (GLOBAL_CONFIG.big_size_avatar) {
+        toBigAvatar();
+        if_tdpre_y_clicked();
+    }
+
+
+    function extractImageDetails1() {
+        const tds = document.querySelectorAll('td.t_f');
+        tds.forEach((td, index1) => {
+            let imgElement = td.querySelectorAll('img');
+            if (imgElement.length > 0) {
+                imgElement.forEach((img, index2) => {
+                    var src = img.getAttribute('src');
+                    var zoomfile = img.getAttribute('zoomfile');
+                    var file = img.getAttribute('file');
+                    const uniqueClassName = `unique-img1-${index1}-${index2}`;
+                    img.classList.add(uniqueClassName);
+                    var style = 
+        `
+        .${uniqueClassName} {
+        content: url('${zoomfile}');
+        width: auto !important;
+        height: auto !important;
+        max-width: 100% !important;
+        max-height: 100% !important;
+        }
+        `
+                    if (src && zoomfile && file) {
+                        GM_addStyle(style);
+                    }
+                });
+            }
+        });
+    }
+    function extractImageDetails2() {
+        const mbn_saves = document.querySelectorAll('div.mbn.savephotop');
+        mbn_saves.forEach((mbn_save, index) => {
+            let imgElement = mbn_save.querySelector('img');
+            if (imgElement) {
+                var src = imgElement.getAttribute('src');
+                var zoomfile = imgElement.getAttribute('zoomfile');
+                var file = imgElement.getAttribute('file');
+                const uniqueClassName = `unique-img2-${index}`;
+                imgElement.classList.add(uniqueClassName);
+                var style = 
+        `
+        .${uniqueClassName} {
+        content: url('${zoomfile}');
+        width: auto !important;
+        height: auto !important;
+        max-width: 100% !important;
+        max-height: 100% !important;
+        }
+        `
+                if (src && zoomfile && file) {
+                    GM_addStyle(style);
+                }
+            }
+        });
+    }
+    function removeKafanScrolltop() {
+        if (site === 'KAFAN') {
+            const scrolltop = document.getElementById('scrolltop');
+            scrolltop.remove();
+        }
+    }
+    if (GLOBAL_CONFIG.picture_optimization) {
+        extractImageDetails1();
+        extractImageDetails2();
+        removeKafanScrolltop();
+    }
+
+
+    if (GLOBAL_CONFIG.theme_beautification) {
+        GM_addStyle (`
+        div.pls.favatar {
+            background-image: url('https://img1.baidu.com/it/u=710094272,181047437&fm=253&fmt=auto&app=138&f=JPEG?w=800&h=1428') !important;
+            background-position: center !important;
+            background-repeat: no-repeat !important;
+            background-size: cover !important;
+        }
+        td.pls, div.tns.xg2, a.xi2, p.xg1 {
+            color: #66CCFF !important;
+        }
+        div.authi {
+            color: #00BFFF!important;
+        }
+        a.xw1 {
+            color: #FF8C00;
+            // color: #FF8C00 !important;
+        }
+        a.showmenu {
+            color: #66CCFF !important;
+            font-weight: bold;
+        }
+        div.avt.y, ul.trp_pop, div.bm.cl {
+            font-weight: bold;
+        }
+        `);
+    }
 
 
     // Automatically expand all posts
     // if (typeof display_blocked_post === 'function') display_blocked_post();
+
 
     // Display Emoji
     if (GLOBAL_CONFIG.display_emoji) {
@@ -1307,6 +1533,9 @@
     }
 
     // Compatibility settings
+
+
+
 
     // Cascading Style Sheets・www.hostloc.com
     site === 'HOSTLOC' && GM_addStyle(`
