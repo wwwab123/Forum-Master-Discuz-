@@ -788,7 +788,7 @@
     }
 
     // Execution as Show users online status
-    if ((member) && (page_type === 'thread page')) {
+    if (member && page_type === 'thread page') {
         show_users_online_status();
     } else if ((site === 'PCBETA' || site === 'DOSPY' || site === '17500') && (page_type === 'thread page')) {
         detection_mode = 'Standard';
@@ -988,7 +988,7 @@
             show_dialog(message);
             this.classList.remove('button-disabled');
         }
-        if ((member) && (page_type === 'thread page')) {
+        if (member && page_type === 'thread page') {
             const detection_mode_button = document.createElement('button');
             detection_mode_button.className = 'custom-function-button detection-mode-button';
             detection_mode_button.innerHTML = '探测模式：' + detection_mode_dic[detection_mode];
