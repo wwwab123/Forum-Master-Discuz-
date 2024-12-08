@@ -1524,16 +1524,22 @@
 
     // Display Emoji
     if (GLOBAL_CONFIG.display_emoji) {
-        const post = document.getElementsByClassName('t_f');
-        for (let i = 0; i < post.length; i++) {
-            post[i].innerHTML = post[i].innerHTML.replace(/\&amp;#.*?;/g, function (char) {
-                if (char.length === 13) {
-                    return String.fromCodePoint(parseInt(char.match(/[0-9]+/)));
+        const elements = [
+            ...document.getElementsByClassName("t_f"),
+            ...document.getElementsByClassName("sign"),
+            ...document.getElementsByClassName("ptm"),
+            ...document.getElementsByClassName("mbm")
+        ]
+        const replaceEmoji = (element, regex, length) => {
+            element.innerHTML = element.innerHTML.replace(regex, char => {
+                if (char.length === length) {
+                    return String.fromCodePoint(parseInt(char.match(/[0-9]+/)))
                 }
-                return char;
-            }
-            );
+                return char
+            })
         }
+        elements.forEach(element => replaceEmoji(element, /\&amp;#.*?;/g, 13))
+        Array.from(xg1).forEach(element => replaceEmoji(element, /\&amp;amp;#.*?;/g, 17))
     }
 
 
