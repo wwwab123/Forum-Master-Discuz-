@@ -1364,23 +1364,38 @@
 
 
     function toBigAvatar() {
-        const selectors = ['.pls .avatar img','.avtm img','.avt img','#tath img','.rate table img','.cm .vm img','.card_mn .avt img','.turing_listtxs img'];
-        selectors.forEach(selector => {
-            const elements = document.querySelectorAll(selector);
-            if (elements.length > 0) {
-                for (let i = 0; i < elements.length; i++) {
-                    let original = elements[i].src;
-                    let parts = original.split('/');
-                    parts[parts.length - 1] = parts[parts.length - 1].replace("middle","big");
-                    parts[parts.length - 1] = parts[parts.length - 1].replace("small","big");
-                    elements[i].src = parts.join('/');
-                    // if (original != elements[i].src) {
-                        // GM_log(`清晰度替换: From ${original} To ${elements[i].src}`);
-                    // }
-                }
+        const kafanAvatarRegex = /^https?:\/\/b\.kafan\.cn\/(.*)_avatar_(small|middle)\.jpg$/
+        const elements = document.querySelectorAll('.pls .avatar img', '.avtm img', '.avt img', '#tath img', '.rate table img', '.cm .vm img', '.card_mn .avt img', '.turing_listtxs img')
+
+        elements.forEach((img) => {
+            if (!kafanAvatarRegex.test(img.src)) {
+                let original = img.src
+                let parts = original.split('/')
+                parts[parts.length - 1] = parts[parts.length - 1].replace("middle", "big")
+                parts[parts.length - 1] = parts[parts.length - 1].replace("small", "big")
+                img.src = parts.join('/')
+                // if (original != elements[i].src) {
+                // GM_log(`清晰度替换: From ${original} To ${elements[i].src}`);
+                // }
+            } else {
+                GM_xmlhttpRequest({
+                    method: 'GET',
+                    url: img.src,
+                    onload: function (response) {
+                        const headers = response.responseHeaders.toLowerCase()
+
+                        if (headers.includes('content-type: image/gif') &&
+                            headers.includes('content-length: 1574')) {
+                            img.src = "https://b.kafan.cn/5/big.gif"
+                        } else {
+                            img.src = img.src.replace(kafanAvatarRegex, "https://b.kafan.cn/$1_avatar_big.jpg")
+                        }
+                    },
+                })
             }
-        });
+        })
     }
+
     function if_tdpre_y_clicked() {
         const tdpre_y = document.getElementsByClassName('tdpre y');
         Array.from(tdpre_y).forEach((elem) => {
