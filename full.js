@@ -1373,7 +1373,7 @@
 
     function toBigAvatar() {
         const kafanAvatarRegex = /^https?:\/\/b\.kafan\.cn\/(.*)_avatar_(small|middle)\.jpg$/
-        const elements = document.querySelectorAll('.pls .avatar img', '.avtm img', '.avt img', '#tath img', '.rate table img', '.cm .vm img', '.card_mn .avt img', '.turing_listtxs img')
+        const elements = document.querySelectorAll(['.pls .avatar img', '.avtm img', '.avt img', '#tath img', '.rate table img', '.cm .vm img', '.card_mn .avt img', '.turing_listtxs img'])
 
         elements.forEach((img) => {
             if (!kafanAvatarRegex.test(img.src)) {
