@@ -4,7 +4,7 @@
 // @name:zh-CN   论坛大师・Discuz！修改版
 // @name:zh-TW   論壇大師・Discuz！修改版
 // @namespace    Forum Master・Discuz!-mxdh (Update by wwwab)
-// @version      1.4.0
+// @version      1.4.1
 // @icon         https://discuz.dismall.com/favicon.ico
 // @description  Forum Master - Discuz!　Beautify the interface, Remove ads, Enhance functions.
 // @description:en    Forum Master - Discuz!　Beautify the interface, Remove ads, Enhance functions.
@@ -107,12 +107,12 @@
         // Turn the avatar to high definition (Apply big size avatar): true/false
         // 头像转为高清晰度: true/false
         // 頭像轉為高清晰度: true/false
-        big_size_avatar: false,
+        big_size_avatar: true,
 
         // Picture Optimization (Overwrite the thumb picture into big size picture): true/false
         // 图片优化(将预览图覆盖为大图): true/false
         // 圖片優化(將預覽圖覆蓋為大圖): true/false
-        picture_optimization: false,
+        picture_optimization: true,
 
         // Theme beautification: true/false
         // 主题美化: true/false
