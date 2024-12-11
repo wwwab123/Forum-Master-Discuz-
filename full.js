@@ -1544,7 +1544,9 @@
             ...document.getElementsByClassName("sign"),
             ...document.getElementsByClassName("ptm"),
             ...document.getElementsByClassName("mbm")
-        ]
+        ];
+        const xg1 = document.getElementsByClassName("xg1");
+
         const replaceEmoji = (element, regex, length) => {
             element.innerHTML = element.innerHTML.replace(regex, char => {
                 if (char.length === length) {
