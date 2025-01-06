@@ -4,7 +4,7 @@
 // @name:zh-CN   论坛大师・Discuz！修改版
 // @name:zh-TW   論壇大師・Discuz！修改版
 // @namespace    Forum Master・Discuz!-mxdh (Update by wwwab)
-// @version      1.4.2
+// @version      1.4.3
 // @icon         https://discuz.dismall.com/favicon.ico
 // @description  Forum Master - Discuz!　Beautify the interface, Remove ads, Enhance functions.
 // @description:en    Forum Master - Discuz!　Beautify the interface, Remove ads, Enhance functions.
@@ -21,6 +21,7 @@
 // @match        http://*/archiver/?fid-*.html
 // @match        http://*/archiver/tid-*.html
 // @match        http://*/archiver/?tid-*.html
+// @match        http://*/dsu_paulsign-sign.html
 // @match        https://*/forum-*.html
 // @match        https://*/thread-*.html
 // @match        https://*/viewthread-*.html
@@ -31,6 +32,7 @@
 // @match        https://*/archiver/?fid-*.html
 // @match        https://*/archiver/tid-*.html
 // @match        https://*/archiver/?tid-*.html
+// @match        https://*/dsu_paulsign-sign.html
 // @grant        unsafeWindow
 // @grant        GM_addStyle
 // @grant        GM_getValue
@@ -38,8 +40,6 @@
 // @grant        GM_setValue
 // @grant        GM_xmlhttpRequest
 // @license GPL-3.0
-// @downloadURL https://update.greasyfork.org/scripts/511735/Forum%20Master%E3%83%BBDiscuz%21%20Revision.user.js
-// @updateURL https://update.greasyfork.org/scripts/511735/Forum%20Master%E3%83%BBDiscuz%21%20Revision.meta.js
 // ==/UserScript==
 
 (function () {
@@ -206,6 +206,8 @@
 
     function get_site_pos() {
         if (!!~hn.indexOf('.com.cn')) return -3;
+        if (!!~hn.indexOf('.net.cn')) return -3;
+        if (!!~hn.indexOf('.org.cn')) return -3;
         return -2;
     }
 
@@ -546,7 +548,7 @@
     }
 
     // Login status
-    const member = !!document.getElementById('extcreditmenu') || !!document.getElementById('myprompt') || !!document.getElementById('myrepeats');
+    const member = !!document.getElementById('extcreditmenu') || !!document.getElementById('myprompt') || !!document.getElementById('myrepeats') || !!document.querySelector('*[title="访问我的空间"]');
 
     GM_log(`Login status: ${member}`);
 
