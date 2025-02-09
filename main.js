@@ -1385,9 +1385,8 @@
                     url: img.src,
                     onload: function (response) {
                         const headers = response.responseHeaders.toLowerCase()
-
-                        if (headers.includes('content-type: image/gif') &&
-                            headers.includes('content-length: 1574')) {
+                        const Regex = /^(?:.*?\r?\n)*content-length:\s*1574(?:.*?\r?\n)*content-type:\s*image\/gif(?:.*?\r?\n)*$/i
+                        if (Regex1.test(headers)) {
                             img.src = "https://b.kafan.cn/5/big.gif"
                         } else {
                             img.src = img.src.replace(kafanAvatarRegex, "https://b.kafan.cn/$1_avatar_big.jpg")
