@@ -41,6 +41,7 @@
 
 ## Improvements
 Look at [here](https://bbs.kafan.cn/thread-2274614-1-1.html)
+
 issues about this project can be feedback on [GreasyFork](https://greasyfork.org/zh-CN/scripts/511737-forum-master-discuz/feedback)、[GitHub](https://github.com/wwwab123/Forum-Master-Discuz-/issues)、[卡饭论坛](https://bbs.kafan.cn/thread-2274614-1-1.html))
 
 ---
