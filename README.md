@@ -1,7 +1,7 @@
 # Forum Master・Discuz! Revision
 
-[简体中文](https://github.com/mxdh/Forum-Master-Discuz-/blob/master/%E8%87%AA%E8%BF%B0%E6%96%87%E4%BB%B6.md)
-[繁體中文](https://github.com/mxdh/Forum-Master-Discuz-/blob/master/%E8%87%AA%E8%BF%B0%E6%AA%94%E6%A1%88%20.md)
+[简体中文](https://github.com/wwwab123/Forum-Master-Discuz-/blob/master/%E8%87%AA%E8%BF%B0%E6%96%87%E4%BB%B6.md)
+[繁體中文](https://github.com/wwwab123/Forum-Master-Discuz-/blob/master/%E8%87%AA%E8%BF%B0%E6%AA%94%E6%A1%88.md)
 
 ## Support List
 - 吾爱破解(www.52pojie.cn)
@@ -12,8 +12,6 @@
 - 火绒安全论坛(bbs.huorong.cn)
 - iYa.App 软件交流社区(iya.app)
 - DOSPY论坛(www.dospy.wang)
-
-This is a lite version. To support more forums, please use [full version](https://greasyfork.org/en/scripts/401307-forum-master-discuz-revision) or [original version](https://greasyfork.org/en/scripts/400250-forum-master-discuz)
 
 ## Function introduction(original)
 - Beautify the interface
@@ -32,22 +30,18 @@ This is a lite version. To support more forums, please use [full version](https:
 
 ---
 
+**This project is based on mxdh' [Forum Master・Discuz! Revision](https://greasyfork.org/zh-CN/scripts/400489-forum-master-discuz-revision), maintained and optimized**
+
 **This project is based on hostname‘ [Forum Master・Discuz!](https://greasyfork.org/zh-CN/scripts/400250-forum-master-discuz), and complies with GPL-3.0**
 
 ## Installation
-**[Github](https://github.com/mxdh/Forum-Master-Discuz-)**
+**[Github](https://github.com/wwwab123/Forum-Master-Discuz-)**
 
-**[GreasyFork(recommend)](https://greasyfork.org/zh-CN/scripts/400489-forum-master-discuz-revision)**
+**[GreasyFork(recommend)](https://greasyfork.org/zh-CN/scripts/511737-forum-master-discuz-revision)**
 
 ## Improvements
-- **Added some settings**
-- **Strengthen the support for 卡饭论坛(automatic check-in, etc.)**
-- **Let the forum support display emoji!😜😜😜Have fun!**
-- **Support each website to choose different display mode(In the original script, all websites share one setting)**
-- Removed the homepage and group buttons(Original project [homepage](https://greasyfork.org/zh-CN/scripts/400250-forum-master-discuz), [group](https://t.me/joinchat/Bc2EjlPZ0aOwiA-Gn73xKA), about Questions about this project can be feedback on [GreasyFork](https://greasyfork.org/zh-CN/scripts/400489-forum-master-discuz/feedback)、[GitHub](https://github.com/mxdh/Forum-Master-Discuz-/issues)、[卡饭论坛](https://bbs.kafan.cn/thread-2178786-1-1.html))
-- Automatic refresh after switching modes
-- Some minor changes to improve the user experience
-- Some optimizations
+Look at [here](https://bbs.kafan.cn/thread-2274614-1-1.html)
+issues about this project can be feedback on [GreasyFork](https://greasyfork.org/zh-CN/scripts/511737-forum-master-discuz/feedback)、[GitHub](https://github.com/wwwab123/Forum-Master-Discuz-/issues)、[卡饭论坛](https://bbs.kafan.cn/thread-2274614-1-1.html))
 
 ---
 
@@ -60,4 +54,4 @@ This is a lite version. To support more forums, please use [full version](https:
 
 ![Rendering](https://i.loli.net/2020/04/15/zpPlQCsg83qSoGY.png)
 
-[Tutorial](https://bbs.kafan.cn/thread-2178786-1-1.html)
+[Tutorial](https://bbs.kafan.cn/thread-2274614-1-1.html)
