@@ -122,7 +122,7 @@
         // Warning record query button: true/false
         // 警告记录查询按钮: true/false
         // 警告記錄查詢按鈕: true/false
-        show_warning_record_button: true,
+        show_warning_record_button: false,
 
         // Scene Mode: 'Standard', 'Family', 'Office'
         // 场景模式: 'Standard', 'Family', 'Office'
@@ -1441,7 +1441,7 @@
                     url: img.src,
                     onload: function (response) {
                         const headers = response.responseHeaders.toLowerCase()
-                        const Regex = /^(?:.*?\r?\n)*content-length:\s*1574(?:.*?\r?\n)*content-type:\s*image\/gif(?:.*?\r?\n)*$/i
+                        const Regex1 = /^(?:.*?\r?\n)*content-length:\s*1574(?:.*?\r?\n)*content-type:\s*image\/gif(?:.*?\r?\n)*$/i
                         if (Regex1.test(headers)) {
                             img.src = "https://b.kafan.cn/5/big.gif"
                         } else {
