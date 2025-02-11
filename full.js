@@ -126,6 +126,11 @@
         // 主題美化: true/false
         theme_beautification: false,
 
+        // Warning record query button: true/false
+        // 警告记录查询按钮: true/false
+        // 警告記錄查詢按鈕: true/false
+        show_warning_record_button: true,
+
         // Scene Mode: 'Standard', 'Family', 'Office'
         // 场景模式: 'Standard', 'Family', 'Office'
         // 場景模式: 'Standard', 'Family', 'Office'
@@ -203,6 +208,26 @@
         }
     }
     const page_type = get_page_type();
+
+    function get_page_id() {
+        const forum_page_id_regex_pn = /forum-(\d+(?![\d]))-/;
+        const forum_page_id_regex_sn = /fid=(\d+(?![\d]))/;
+        const thread_page_id_regex_pn = /thread-(\d+(?![\d]))-/;
+        const thread_page_id_regex_sn = /tid=(\d+(?![\d]))/;
+        if (page_type === 'forum page' && forum_page_id_regex_pn.test(pn)) {
+            return pn.match(forum_page_id_regex_pn)[1];
+        }
+        if (page_type === 'forum page' && forum_page_id_regex_sn.test(sn)) {
+            return sn.match(forum_page_id_regex_sn)[1];
+        }
+        if (page_type === 'thread page' && thread_page_id_regex_pn.test(pn)) {
+            return pn.match(thread_page_id_regex_pn)[1];
+        }
+        if (page_type === 'thread page' && thread_page_id_regex_sn.test(sn)) {
+            return sn.match(thread_page_id_regex_sn)[1];
+        }
+    }
+    const page_id = get_page_id();
 
     function get_site_pos() {
         if (!!~hn.indexOf('.com.cn')) return -3;
@@ -795,6 +820,37 @@
             default:
                 break;
         }
+    }
+
+    function warning_record_button() {
+        const pls_favatar = document.getElementsByClassName('pls favatar');
+        const avatar = document.getElementsByClassName('avatar');
+        const info = document.getElementsByClassName('i');
+        for (let i = 0; i < info.length; i++) {
+            setTimeout(() => {
+                let html = avatar[i].innerHTML;
+                let id = /\d/.test(html) ? html.match(/\d+/)[0] : info[i].innerHTML.match(/\d+/)[0];
+                let a = document.createElement('a');
+                a.title = "viewwarning_main";
+                a.href = `forum.php?mod=misc&action=viewwarning&tid=${page_id}&uid=${id}`;
+                a.setAttribute("onclick", "showWindow('viewwarning', this.href)");
+                avatar[i].appendChild(a);
+                a.style.display = 'none';
+
+                let b = document.createElement('b');
+                b.textContent = "查看警告记录";
+                b.title = "viewwarning_display";
+                b.className = "custom-function-button";
+                let html2 = pls_favatar[i].innerHTML;
+                pls_favatar[i].appendChild(b);
+                b.addEventListener('click', () => {
+                    a.click();
+                });
+            }, 1000);
+        }
+    }
+    if (GLOBAL_CONFIG.show_warning_record_button && page_type === 'thread page') {
+        warning_record_button();
     }
 
     // Execution as Show users online status
