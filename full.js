@@ -4,7 +4,7 @@
 // @name:zh-CN   论坛大师・Discuz！修改版
 // @name:zh-TW   論壇大師・Discuz！修改版
 // @namespace    Forum Master・Discuz!-mxdh (Update by wwwab)
-// @version      1.4.3
+// @version      1.4.5
 // @icon         https://discuz.dismall.com/favicon.ico
 // @description  Forum Master - Discuz!　Beautify the interface, Remove ads, Enhance functions.
 // @description:en    Forum Master - Discuz!　Beautify the interface, Remove ads, Enhance functions.
@@ -15,6 +15,7 @@
 // @match        http://*/thread-*.html
 // @match        http://*/viewthread-*.html
 // @match        http://*/fourm/thread-*.html
+// @match        http://*/space-uid-*.html
 // @match        http://*/forum.php?mod=*
 // @match        http://*/home.php?mod=*
 // @match        http://*/archiver/fid-*.html
@@ -26,6 +27,7 @@
 // @match        https://*/thread-*.html
 // @match        https://*/viewthread-*.html
 // @match        https://*/forum/thread-*.html
+// @match        https://*/space-uid-*.html
 // @match        https://*/forum.php?mod=*
 // @match        https://*/home.php?mod=*
 // @match        https://*/archiver/fid-*.html
@@ -197,13 +199,12 @@
     function get_page_type() {
         const forum_page_regex_pn = /^\/forum-.*\.html$/;
         const forum_page_regex_sn = /^\?.*forumdisplay.*$/;
-        const thread_page_regex_pn1 = /^\/thread-.*\.html$/;
-        const thread_page_regex_pn2 = /^\/viewthread-.*\.html$/;
+        const thread_page_regex_pn = /^\/thread-.*\.html$|^\/viewthread-.*\.html$/;
         const thread_page_regex_sn = /^\?.*viewthread.*$/;
         if (forum_page_regex_pn.test(pn) || forum_page_regex_sn.test(sn)) {
             return 'forum page';
         }
-        if (thread_page_regex_pn1.test(pn) || thread_page_regex_pn2.test(pn) || thread_page_regex_sn.test(sn)) {
+        if (thread_page_regex_pn.test(pn) || thread_page_regex_sn.test(sn)) {
             return 'thread page';
         }
     }
@@ -1248,7 +1249,7 @@
             case 'HOSTLOC':
                 return '󠀠'.repeat(10);
             default:
-                return '\n\n[color=#ffffff]插入空白字符以填充字数[/color]'; // 默认为纯白色字体的"插入空白字符以填充字数"
+                return '\r\n[color=#ffffff]插入空白字符以填充字数[/color]'; // 默认为纯白色字体的"插入空白字符以填充字数"
         }
     }
 
@@ -1431,7 +1432,7 @@
 
     function toBigAvatar() {
         const kafanAvatarRegex = /^https?:\/\/b\.kafan\.cn\/(.*)_avatar_(small|middle)\.jpg$/
-        const elements = document.querySelectorAll(['.pls .avatar img', '.avtm img', '.avt img', '#tath img', '.rate table img', '.cm .vm img', '.card_mn .avt img', '.turing_listtxs img'])
+        const elements = document.querySelectorAll(['.pls .avatar img', '.avtm img', '.avt img', '#tath img', '.rate table img', '.cm .vm img', '.card_mn .avt img', '.turing_listtxs img', '.t img', '.hm img'])
 
         elements.forEach((img) => {
             if (!kafanAvatarRegex.test(img.src)) {
@@ -1544,18 +1545,67 @@
             }
         });
     }
-    function removeKafanScrolltop() {
-        if (site === 'KAFAN') {
-            const scrolltop = document.getElementById('scrolltop');
-            scrolltop.remove();
-        }
+    function removeScrolltop() {
+        const scrolltop = document.getElementById('scrolltop');
+        scrolltop.remove();
     }
     if (GLOBAL_CONFIG.picture_optimization) {
         extractImageDetails1();
         extractImageDetails2();
-        removeKafanScrolltop();
+        removeScrolltop();
     }
 
+    function KafanProfile() {
+        const kafan_profile_regex_pn = /^\/space-uid-(\d+(?![\d])).html$/;
+        const kafan_profile_regex_sn = /^\?mod=space&uid=(\d+(?![\d])).*$/;
+        if (site === 'KAFAN') {
+            let uid = null;
+            if (kafan_profile_regex_pn.test(pn)) {
+                uid = pn.match(kafan_profile_regex_pn)[1];
+            } else if (kafan_profile_regex_sn.test(sn)) {
+                uid = sn.match(kafan_profile_regex_sn)[1];
+            }
+
+            let mtm_mbm = document.getElementsByClassName('mtm mbm');
+
+            let a = document.createElement('a');
+            a.textContent = "查看个人日志";
+            a.title = "do_blog";
+            a.className = "custom-function-button";
+            a.href = `home.php?mod=space&uid=${uid}&do=blog&view=me&from=space`;
+            mtm_mbm[0].appendChild(a)
+
+            let b = document.createElement('a');
+            b.textContent = "查看主题回复";
+            b.title = "do_thread";
+            b.className = "custom-function-button";
+            b.href = `home.php?mod=space&uid=${uid}&do=thread&view=me&from=space`;
+            mtm_mbm[0].appendChild(b)
+
+            let c = document.createElement('a');
+            c.textContent = "查看个人资料页";
+            c.title = "do_blog";
+            c.className = "custom-function-button";
+            c.href = `home.php?mod=space&uid=${uid}&do=profile`;
+            mtm_mbm[0].appendChild(c)
+        }
+    }
+    KafanProfile();
+
+    function QQiconToStr() {
+        let urlPattern = /wpa\.qq\.com\/msgrd\?v=3&uin=(\d+)(?!\d).*/i;
+        let links = document.querySelectorAll('a[href*="wpa.qq.com/msgrd?v=3"]');
+        links.forEach(link => {
+            let uinMatch = link.href.match(urlPattern)[1];
+            if (uinMatch) {
+                const newElement = document.createElement('span');
+                newElement.textContent = `Ta设置的QQ: ${uinMatch}`;
+                newElement.style.display = "block";
+                link.parentNode.appendChild(newElement, link);
+            }
+        });
+    }
+    QQiconToStr();
 
     if (GLOBAL_CONFIG.theme_beautification) {
         GM_addStyle (`
