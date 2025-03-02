@@ -978,6 +978,10 @@
         function_buttons.className = 'function-buttons';
         let function_buttons_package;
         switch (true) {
+            case !!document.getElementById('pt'):
+                function_buttons_package = document.getElementById('pt');
+                break;
+
             case !!document.getElementsByClassName('xm_header_top_ul').length:
                 function_buttons_package = document.getElementsByClassName('xm_header_top_ul')[0];
                 break;
@@ -986,16 +990,8 @@
                 function_buttons_package = document.getElementById('extcreditmenu').parentElement;
                 break;
 
-            case site === 'PCBETA' && !!document.getElementsByClassName('hdc').length:
-                function_buttons_package = document.getElementsByClassName('hdc')[0];
-                break;
-
             case !!document.getElementsByClassName('menu').length:
                 function_buttons_package = document.getElementsByClassName('menu')[0];
-                break;
-
-            case !!document.getElementById('pt'):
-                function_buttons_package = document.getElementById('pt');
                 break;
 
             default:
