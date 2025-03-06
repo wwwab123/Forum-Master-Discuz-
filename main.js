@@ -4,7 +4,7 @@
 // @name:zh-CN   论坛大师・Discuz！修改版
 // @name:zh-TW   論壇大師・Discuz！修改版
 // @namespace    Forum Master・Discuz!-mxdh (Update by wwwab)
-// @version      1.4.6
+// @version      1.4.7
 // @icon         https://discuz.dismall.com/favicon.ico
 // @description  Forum Master - Discuz!　Beautify the interface, Remove ads, Enhance functions.
 // @description:en    Forum Master - Discuz!　Beautify the interface, Remove ads, Enhance functions.
@@ -90,14 +90,19 @@
         advanced_mode_detection_display_style: 'mode2',
 
         // Text Beautification: true/false
-        // 文本美化: true/false
-        // 文字美化: true/false
+        // 文本字體美化: true/false
+        // 文字字体美化: true/false
         text_beautification: true,
 
         // Code Beautification: true/false
         // 代码美化：true/false
         // 程式碼美化：true/false
         code_beautification: true,
+
+        // text_size_linespacing_adjust: true/false
+        // 文字大小行距优化: true/false
+        // 文本大小行距優化: true/false
+        textsize_linespacing_adjust: true,
 
         // Block Baidu_tongji code: true/false
         // 屏蔽百度统计: true/false
@@ -539,6 +544,10 @@
         `)
     }
 
+    if(GLOBAL_CONFIG.textsize_linespacing_adjust) {
+        GM_addStyle('.t_f { line-height: 30px;font-size: 18px;}');
+    }
+
     if (clean_post) {
         GM_addStyle(`
             .t_f font{
@@ -973,6 +982,7 @@
                 break;
 
             case !!document.getElementById('extcreditmenu'):
+                GM_addStyle('#um * { display: inline !important }');
                 function_buttons_package = document.getElementById('extcreditmenu').parentElement;
                 break;
 
