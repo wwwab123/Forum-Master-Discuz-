@@ -4,7 +4,7 @@
 // @name:zh-CN   论坛大师・Discuz！修改版
 // @name:zh-TW   論壇大師・Discuz！修改版
 // @namespace    Forum Master・Discuz!-mxdh (Update by wwwab)
-// @version      1.4.6
+// @version      1.4.7
 // @icon         https://discuz.dismall.com/favicon.ico
 // @description  Forum Master - Discuz!　Beautify the interface, Remove ads, Enhance functions.
 // @description:en    Forum Master - Discuz!　Beautify the interface, Remove ads, Enhance functions.
@@ -99,14 +99,19 @@
         advanced_mode_detection_display_style: 'mode2',
 
         // Text Beautification: true/false
-        // 文本美化: true/false
-        // 文字美化: true/false
+        // 文本字體美化: true/false
+        // 文字字体美化: true/false
         text_beautification: true,
 
         // Code Beautification: true/false
         // 代码美化：true/false
         // 程式碼美化：true/false
         code_beautification: true,
+
+        // text_size_linespacing_adjust: true/false
+        // 文字大小行距优化: true/false
+        // 文本大小行距優化: true/false
+        textsize_linespacing_adjust: true,
 
         // Block Baidu_tongji code: true/false
         // 屏蔽百度统计: true/false
@@ -533,7 +538,7 @@
         }
     `);
 
-    if (GLOBAL_CONFIG.text_beautification === true) {
+    if (GLOBAL_CONFIG.text_beautification) {
         GM_addStyle(`
             body, table, input, button, select, textarea, a {
                 font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei New", "Microsoft Yahei", "WenQuanYi Micro Hei", "Noto Sans CJK", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
@@ -541,13 +546,17 @@
         `)
     }
 
-    if (GLOBAL_CONFIG.code_beautification === true) {
+    if (GLOBAL_CONFIG.code_beautification) {
         GM_addStyle(`
             .mono, .md, .code, .pre, .tt, mono, md, code, pre, tt,
             .blockcode ol li {
                 font-family: "Fira Code", Hack, "Source Code Pro", SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", "Microsoft YaHei Mono", "WenQuanYi Zen Hei Mono", "Noto Sans Mono CJK", monospace !important;
             }
         `)
+    }
+
+    if(GLOBAL_CONFIG.textsize_linespacing_adjust) {
+        GM_addStyle('.t_f { line-height: 30px;font-size: 18px;}');
     }
 
     if (clean_post) {
@@ -978,20 +987,25 @@
         function_buttons.className = 'function-buttons';
         let function_buttons_package;
         switch (true) {
-            case !!document.getElementById('pt'):
-                function_buttons_package = document.getElementById('pt');
-                break;
-
             case !!document.getElementsByClassName('xm_header_top_ul').length:
                 function_buttons_package = document.getElementsByClassName('xm_header_top_ul')[0];
                 break;
 
             case !!document.getElementById('extcreditmenu'):
+                GM_addStyle('#um * { display: inline !important }');
                 function_buttons_package = document.getElementById('extcreditmenu').parentElement;
+                break;
+
+            case site === 'PCBETA' && !!document.getElementsByClassName('hdc').length:
+                function_buttons_package = document.getElementsByClassName('hdc')[0];
                 break;
 
             case !!document.getElementsByClassName('menu').length:
                 function_buttons_package = document.getElementsByClassName('menu')[0];
+                break;
+
+            case !!document.getElementById('pt'):
+                function_buttons_package = document.getElementById('pt');
                 break;
 
             default:
