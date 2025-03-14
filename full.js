@@ -4,7 +4,7 @@
 // @name:zh-CN   论坛大师・Discuz！修改版
 // @name:zh-TW   論壇大師・Discuz！修改版
 // @namespace    Forum Master・Discuz!-mxdh (Update by wwwab)
-// @version      1.4.7
+// @version      1.4.8
 // @icon         https://discuz.dismall.com/favicon.ico
 // @description  Forum Master - Discuz!　Beautify the interface, Remove ads, Enhance functions.
 // @description:en    Forum Master - Discuz!　Beautify the interface, Remove ads, Enhance functions.
@@ -108,10 +108,12 @@
         // 程式碼美化：true/false
         code_beautification: true,
 
-        // text_size_linespacing_adjust: true/false
-        // 文字大小行距优化: true/false
-        // 文本大小行距優化: true/false
+        // text_size_linespacing_adjust in posts: true/false
+        // 帖子文字大小行距优化: true/false
+        // 帖子文本大小行距優化: true/false
         textsize_linespacing_adjust: true,
+        line_height: '30px',
+        font_size: '18px',
 
         // Block Baidu_tongji code: true/false
         // 屏蔽百度统计: true/false
@@ -555,8 +557,9 @@
         `)
     }
 
-    if(GLOBAL_CONFIG.textsize_linespacing_adjust) {
-        GM_addStyle('.t_f { line-height: 30px;font-size: 18px;}');
+    if (GLOBAL_CONFIG.textsize_linespacing_adjust) {
+        let style = `.t_f { line-height: ${GLOBAL_CONFIG.line_height};font-size: ${GLOBAL_CONFIG.font_size};}`
+        GM_addStyle(style);
     }
 
     if (clean_post) {
