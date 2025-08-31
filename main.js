@@ -4,7 +4,7 @@
 // @name:zh-CN   论坛大师・Discuz！修改版
 // @name:zh-TW   論壇大師・Discuz！修改版
 // @namespace    Forum Master・Discuz!-mxdh (Update by wwwab)
-// @version      1.4.8
+// @version      1.4.9
 // @icon         https://discuz.dismall.com/favicon.ico
 // @description  Forum Master - Discuz!　Beautify the interface, Remove ads, Enhance functions.
 // @description:en    Forum Master - Discuz!　Beautify the interface, Remove ads, Enhance functions.
@@ -972,6 +972,18 @@
 
     if (site === 'HUORONG' || site === 'DOSPY') display_check_in_button = false;
 
+    function applyInlineStyle(id) {
+        const root = document.getElementById(id);
+        if (!root) return;
+  
+        const elements = root.querySelectorAll('*:not(script)');
+        elements.forEach(el => {
+            const computedStyle = window.getComputedStyle(el);
+            if (computedStyle.display === 'none') return;
+            el.style.setProperty('display', 'inline', 'important');
+        });
+    }
+
     // Create Button Group
     function create_button_group() {
         // Function buttons
@@ -985,7 +997,7 @@
                 break;
 
             case !!document.getElementById('extcreditmenu'):
-                GM_addStyle('#um * { display: inline !important }');
+                applyInlineStyle('um');
                 function_buttons_package = document.getElementById('extcreditmenu').parentElement;
                 break;
 
