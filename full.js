@@ -4,7 +4,7 @@
 // @name:zh-CN   论坛大师・Discuz！修改版
 // @name:zh-TW   論壇大師・Discuz！修改版
 // @namespace    Forum Master・Discuz!-mxdh (Update by wwwab)
-// @version      1.4.9
+// @version      1.5.0
 // @icon         https://discuz.dismall.com/favicon.ico
 // @description  Forum Master - Discuz!　Beautify the interface, Remove ads, Enhance functions.
 // @description:en    Forum Master - Discuz!　Beautify the interface, Remove ads, Enhance functions.
@@ -41,6 +41,7 @@
 // @grant        GM_log
 // @grant        GM_setValue
 // @grant        GM_xmlhttpRequest
+// @connect      *
 // @license GPL-3.0
 // ==/UserScript==
 
@@ -1173,6 +1174,46 @@
             function_buttons.appendChild(thread_sortord_button);
         }
 
+        function check_in_plugin_scan() {
+            let plugin_id_array = [
+                'study_daily_attendance:daily_attendance',
+                'dsu_amupper',
+                'k_misign:sign',
+                'dsu_paulsign:sign',
+            ];
+            for (let i = 0; i < plugin_id_array.length; i++) {
+                let request = new XMLHttpRequest();
+                let space = 'plugin.php?id=' + plugin_id_array[i];
+                request.open('GET', space, false);
+                try {
+                    request.send();
+                    if (request.status >= 200 && request.status < 300) {
+                        const resp = request.responseText || '';
+                        if (!resp.includes('插件不存在') && !resp.includes('已关闭')) {
+                            GM_log(`Found check-in plugin: ${plugin_id_array[i]}`);
+                            return plugin_id_array[i];
+                        }
+                    }
+                } catch (e) {
+                    return null;
+                }
+            }
+
+            let req2 = new XMLHttpRequest();
+            req2.open('GET', 'dsu_paulsign-sign.html', false);
+            try {
+                req2.send();
+                if (req2.status >= 200 && req2.status < 300) {
+                    GM_log(`Found check-in plugin: dsu_paulsign:sign`);
+                    return 'dsu_paulsign:sign';
+                }
+            } catch (e) {
+                return null;
+            }
+
+            return null;
+        }
+
         // Check in
         if (member && display_check_in_button) {
             function check_in() {
@@ -1186,6 +1227,35 @@
                     show_dialog(message)
                 }, 1234);
 
+                let plugin_id = check_in_plugin_scan();
+                switch (plugin_id) {
+                    case 'study_daily_attendance:daily_attendance':
+                        showWindow('study_daily_attendance', 'plugin.php?id=study_daily_attendance:daily_attendance&fhash=' + document.getElementsByName('formhash')[0].value);
+                        return false;
+                    case 'dsu_amupper':
+                        showWindow('dsu_amupper', 'plugin.php?id=dsu_amupper&ppersubmit=true&formhash=' + document.getElementsByName('formhash')[0].value);
+                        return false;
+                    case 'k_misign:sign':
+                        showWindow('msi_sign', 'plugin.php?id=k_misign:sign&operation=qiandao&formhash=' + document.getElementsByName('formhash')[0].value + '&format=empty&inajax=1&ajaxtarget=JD_sign');
+                        return false;
+                    case 'dsu_paulsign:sign':
+                        setTimeout(() => {
+                            let request = new XMLHttpRequest();
+                            let space = 'plugin.php?id=dsu_paulsign:sign&operation=qiandao&infloat=1&inajax=1';
+                            let form = new FormData();
+                            form.append('formhash', document.getElementsByName('formhash')[0].value);
+                            form.append('qdxq', 'kx');
+                            form.append('qdmode', '1');
+                            form.append('todaysay', '签到咯~~~');
+                            form.append('fastreply', '0');
+                            request.open('POST', space);
+                            request.send(form);
+                        }, 1000);
+                        return false;
+                    default:
+                        break;
+                }
+
                 if (site === 'PCBETA') {
                     window.open('//i.pcbeta.com/home.php?mod=task&do=apply&id=149');
                     return false;
@@ -1194,6 +1264,7 @@
                     window.open('//www.52pojie.cn/home.php?mod=task&do=apply&id=2');
                     return false;
                 }
+                /* 
                 if (site === 'X64BBS') {
                     showWindow('study_daily_attendance', 'plugin.php?id=study_daily_attendance:daily_attendance&fhash=' + document.getElementsByName('formhash')[0].value);
                     return false
@@ -1202,6 +1273,26 @@
                     showWindow('dsu_amupper', 'plugin.php?id=dsu_amupper&ppersubmit=true&formhash=' + document.getElementsByName('formhash')[0].value);
                     return false;
                 }
+                if (site === 'MSI') {
+                    showWindow('msi_sign', 'plugin.php?id=k_misign:sign&operation=qiandao&formhash=' + document.getElementsByName('formhash')[0].value = '&format=empty&inajax=1&ajaxtarget=JD_sign');
+                    return false;
+                }
+                if (site === 'TAMPERMONKEY') {
+                    setTimeout(() => {
+                        let request = new XMLHttpRequest();
+                        let space = 'plugin.php?id=dsu_paulsign:sign&operation=qiandao&infloat=1&inajax=1';
+                        let form = new FormData();
+                        form.append('formhash', document.getElementsByName('formhash')[0].value);
+                        form.append('qdxq', 'kx');
+                        form.append('qdmode', '1');
+                        form.append('todaysay', '签到咯~~~');
+                        form.append('fastreply', '0');
+                        request.open('POST', space);
+                        request.send(form);
+                    }, 1000);
+                    return false;
+                }
+                */ 
 
                 for (let i = 0; i < 10; i++) {
                     setTimeout(() => {
@@ -1455,9 +1546,44 @@
     // Message_Edit_Module(5) · End
 
 
+    async function getFileSHA256(fileUrl) {
+        return new Promise((resolve, reject) => {
+            GM_xmlhttpRequest({
+                method: "GET",
+                url: fileUrl,
+                responseType: "arraybuffer",
+                onload: function(response) {
+                    if (response.status === 200) {
+                        const fileData = new Uint8Array(response.response);
+
+                        crypto.subtle.digest('SHA-256', fileData)
+                            .then(hashBuffer => {
+                                const hashArray = Array.from(new Uint8Array(hashBuffer));
+                                const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+                                resolve(hashHex);
+                            })
+                            .catch(error => {
+                                reject(new Error('计算SHA256时出错: ' + error.message));
+                            });
+                    } else {
+                        reject(new Error(`HTTP错误: ${response.status}`));
+                    }
+                },
+                onerror: function(error) {
+                    reject(new Error('请求失败: ' + error.error));
+                }
+            });
+        });
+    }
+
     function toBigAvatar() {
         const kafanAvatarRegex = /^https?:\/\/b\.kafan\.cn\/(.*)_avatar_(small|middle)\.jpg$/
         const elements = document.querySelectorAll(['.pls .avatar img', '.avtm img', '.avt img', '#tath img', '.rate table img', '.cm .vm img', '.card_mn .avt img', '.turing_listtxs img', '.t img', '.hm img'])
+
+        let smallGifHash = null;
+        getFileSHA256('https://b.kafan.cn/5/small.gif').then((hash) => {
+            smallGifHash = hash;
+        });
 
         elements.forEach((img) => {
             if (!kafanAvatarRegex.test(img.src)) {
@@ -1470,19 +1596,15 @@
                 // GM_log(`清晰度替换: From ${original} To ${elements[i].src}`);
                 // }
             } else {
-                GM_xmlhttpRequest({
-                    method: 'GET',
-                    url: img.src,
-                    onload: function (response) {
-                        const headers = response.responseHeaders.toLowerCase()
-                        const Regex1 = /^(?:.*?\r?\n)*content-length:\s*1574(?:.*?\r?\n)*content-type:\s*image\/gif(?:.*?\r?\n)*$/i
-                        if (Regex1.test(headers)) {
-                            img.src = "https://b.kafan.cn/5/big.gif"
-                        } else {
-                            img.src = img.src.replace(kafanAvatarRegex, "https://b.kafan.cn/$1_avatar_big.jpg")
-                        }
-                    },
-                })
+                getFileSHA256(img.src).then((hash) => {
+                    if (hash === smallGifHash) {
+                        img.src = "https://b.kafan.cn/5/big.gif"
+                    } else {
+                        img.src = img.src.replace(kafanAvatarRegex, "https://b.kafan.cn/$1_avatar_big.jpg")
+                    }
+                }).catch((error) => {
+                    GM_log('Error computing SHA256: ' + error.message);
+                });
             }
         })
     }
