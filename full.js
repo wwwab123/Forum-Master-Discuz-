@@ -4,7 +4,7 @@
 // @name:zh-CN   论坛大师・Discuz！修改版
 // @name:zh-TW   論壇大師・Discuz！修改版
 // @namespace    Forum Master・Discuz!-mxdh (Update by wwwab)
-// @version      1.5.1
+// @version      1.5.2
 // @icon         https://discuz.dismall.com/favicon.ico
 // @description  Forum Master - Discuz!　Beautify the interface, Remove ads, Enhance functions.
 // @description:en    Forum Master - Discuz!　Beautify the interface, Remove ads, Enhance functions.
@@ -1749,6 +1749,26 @@
         }
     }
     KafanProfile();
+
+    function a9DM_Remove_AD() {
+        if (site === '9DMGAMEMOD') {
+            const sliderContainer = document.querySelector('.slider-container');
+            if (sliderContainer) {
+                sliderContainer.querySelectorAll('.forum-slider, .slider-indicators, .slide-title, .slide-desc, .slide-btn').forEach(element => element.remove());
+                sliderContainer.remove();
+            }
+            const elements = [
+                ...document.getElementsByClassName('a_fl'),
+                ...document.getElementsByClassName('a_cn'),
+                ...document.getElementsByClassName('a_pt'),
+                ...document.getElementsByClassName('wp a_hd')
+            ]
+            elements.forEach(element => {
+                element.remove();
+            });
+        }
+    }
+    a9DM_Remove_AD();
 
     function QQiconToStr() {
         let urlPattern = /wpa\.qq\.com\/msgrd\?v=3&uin=(\d+)(?!\d).*/i;
