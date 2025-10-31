@@ -4,7 +4,7 @@
 // @name:zh-CN   论坛大师・Discuz！修改版
 // @name:zh-TW   論壇大師・Discuz！修改版
 // @namespace    Forum Master・Discuz!-mxdh (Update by wwwab)
-// @version      1.5.2
+// @version      1.5.3
 // @icon         https://discuz.dismall.com/favicon.ico
 // @description  Forum Master - Discuz!　Beautify the interface, Remove ads, Enhance functions.
 // @description:en    Forum Master - Discuz!　Beautify the interface, Remove ads, Enhance functions.
@@ -1342,16 +1342,10 @@
         }
     }
     if (document.getElementsByClassName('prev').length === 0) {
-        const locked = member && document.getElementsByClassName('locked');
-        if (typeof locked === 'object' && !!locked.length) {
-            for (let i = 0; i < locked.length; i++) {
-                skip_bottom(locked[i].getElementsByTagName('a')[0]);
-            }
-        }
         const fastre = member && document.getElementsByClassName('fastre')[0];
         !!fastre && skip_bottom(fastre);
         const replyfast = member && document.getElementsByClassName('replyfast')[0];
-        !!fastre && skip_bottom(replyfast);
+        !!replyfast && skip_bottom(replyfast);
     }
 
 

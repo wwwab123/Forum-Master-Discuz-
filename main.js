@@ -4,7 +4,7 @@
 // @name:zh-CN   论坛大师・Discuz！修改版
 // @name:zh-TW   論壇大師・Discuz！修改版
 // @namespace    Forum Master・Discuz!-mxdh (Update by wwwab)
-// @version      1.5.1
+// @version      1.5.3
 // @icon         https://discuz.dismall.com/favicon.ico
 // @description  Forum Master - Discuz!　Beautify the interface, Remove ads, Enhance functions.
 // @description:en    Forum Master - Discuz!　Beautify the interface, Remove ads, Enhance functions.
@@ -28,6 +28,10 @@
 // @match        https://home.x64bbs.cn/*
 // @match        https://bbs.tampermonkey.net.cn/*
 // @match        https://mce.msi.cn/*
+// @match        9dmgamemod.com/*
+// @match        www.9dmgamemod.com/*
+// @match        http://9dmgamemod.com/*
+// @match        http://www.9dmgamemod.com/*
 // @grant        unsafeWindow
 // @grant        GM_addStyle
 // @grant        GM_getValue
@@ -1334,16 +1338,10 @@
         }
     }
     if (document.getElementsByClassName('prev').length === 0) {
-        const locked = member && document.getElementsByClassName('locked');
-        if (typeof locked === 'object' && !!locked.length) {
-            for (let i = 0; i < locked.length; i++) {
-                skip_bottom(locked[i].getElementsByTagName('a')[0]);
-            }
-        }
         const fastre = member && document.getElementsByClassName('fastre')[0];
         !!fastre && skip_bottom(fastre);
         const replyfast = member && document.getElementsByClassName('replyfast')[0];
-        !!fastre && skip_bottom(replyfast);
+        !!replyfast && skip_bottom(replyfast);
     }
 
 
@@ -1741,6 +1739,26 @@
         }
     }
     KafanProfile();
+
+    function a9DM_Remove_AD() {
+        if (site === '9DMGAMEMOD') {
+            const sliderContainer = document.querySelector('.slider-container');
+            if (sliderContainer) {
+                sliderContainer.querySelectorAll('.forum-slider, .slider-indicators, .slide-title, .slide-desc, .slide-btn').forEach(element => element.remove());
+                sliderContainer.remove();
+            }
+            const elements = [
+                ...document.getElementsByClassName('a_fl'),
+                ...document.getElementsByClassName('a_cn'),
+                ...document.getElementsByClassName('a_pt'),
+                ...document.getElementsByClassName('wp a_hd')
+            ]
+            elements.forEach(element => {
+                element.remove();
+            });
+        }
+    }
+    a9DM_Remove_AD();
 
     function QQiconToStr() {
         let urlPattern = /wpa\.qq\.com\/msgrd\?v=3&uin=(\d+)(?!\d).*/i;
