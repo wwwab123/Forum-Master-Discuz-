@@ -4,7 +4,7 @@
 // @name:zh-CN   论坛大师・Discuz！修改版
 // @name:zh-TW   論壇大師・Discuz！修改版
 // @namespace    Forum Master・Discuz!-mxdh (Update by wwwab)
-// @version      1.5.0
+// @version      1.5.1
 // @icon         https://discuz.dismall.com/favicon.ico
 // @description  Forum Master - Discuz!　Beautify the interface, Remove ads, Enhance functions.
 // @description:en    Forum Master - Discuz!　Beautify the interface, Remove ads, Enhance functions.
@@ -1556,15 +1556,19 @@
                     if (response.status === 200) {
                         const fileData = new Uint8Array(response.response);
 
-                        crypto.subtle.digest('SHA-256', fileData)
-                            .then(hashBuffer => {
-                                const hashArray = Array.from(new Uint8Array(hashBuffer));
-                                const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
-                                resolve(hashHex);
-                            })
-                            .catch(error => {
-                                reject(new Error('计算SHA256时出错: ' + error.message));
-                            });
+                        try {
+                            crypto.subtle.digest('SHA-256', fileData)
+                                .then(hashBuffer => {
+                                    const hashArray = Array.from(new Uint8Array(hashBuffer));
+                                    const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+                                    resolve(hashHex);
+                                })
+                                .catch(error => {
+                                    reject(new Error('计算SHA256时出错: ' + error.message));
+                                });
+                        } catch (error) {
+                            reject(new Error('计算SHA256时出错: ' + error.message));
+                        }
                     } else {
                         reject(new Error(`HTTP错误: ${response.status}`));
                     }
@@ -1581,9 +1585,12 @@
         const elements = document.querySelectorAll(['.pls .avatar img', '.avtm img', '.avt img', '#tath img', '.rate table img', '.cm .vm img', '.card_mn .avt img', '.turing_listtxs img', '.t img', '.hm img'])
 
         let smallGifHash = null;
-        getFileSHA256('https://b.kafan.cn/5/small.gif').then((hash) => {
-            smallGifHash = hash;
-        });
+
+        if (site == 'KAFAN') {
+            getFileSHA256('https://b.kafan.cn/5/small.gif').then((hash) => {
+                smallGifHash = hash;
+            });
+        }
 
         elements.forEach((img) => {
             if (!kafanAvatarRegex.test(img.src)) {
@@ -1694,7 +1701,9 @@
     }
     function removeScrolltop() {
         const scrolltop = document.getElementById('scrolltop');
-        scrolltop.remove();
+        if (scrolltop) {
+            scrolltop.remove();
+        }
     }
     if (GLOBAL_CONFIG.picture_optimization) {
         extractImageDetails1();
