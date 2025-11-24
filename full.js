@@ -4,7 +4,7 @@
 // @name:zh-CN   论坛大师・Discuz！修改版
 // @name:zh-TW   論壇大師・Discuz！修改版
 // @namespace    Forum Master・Discuz!-mxdh (Update by wwwab)
-// @version      1.5.3
+// @version      1.5.4
 // @icon         https://discuz.dismall.com/favicon.ico
 // @description  Forum Master - Discuz!　Beautify the interface, Remove ads, Enhance functions.
 // @description:en    Forum Master - Discuz!　Beautify the interface, Remove ads, Enhance functions.
@@ -1746,11 +1746,16 @@
 
     function a9DM_Remove_AD() {
         if (site === '9DMGAMEMOD') {
-            const sliderContainer = document.querySelector('.slider-container');
-            if (sliderContainer) {
-                sliderContainer.querySelectorAll('.forum-slider, .slider-indicators, .slide-title, .slide-desc, .slide-btn').forEach(element => element.remove());
-                sliderContainer.remove();
+            const sliderContainers = ['#slidersteammakxq', '#steammakxq-wrapper']; 
+            sliderContainers.forEach(selector => {
+                document.querySelector(selector)?.remove();
+            });
+            if (page_type === 'thread page') {
+                document.querySelectorAll('div.forum-slider, div.slide-item, div.slider-indicators, div.slider-caption, div.slider-caption-box, div.slide-btn-container').forEach(child => child.remove());
+                document.querySelectorAll('a.slite-btn, a.slite-btn.slitebtn').forEach(child => child.remove());
+                document.querySelectorAll('.slide-pic, .slide-title, .slide-desc, .slide-btn, .slider-nav-btn, .slider-nav-btn.prev-btn, .slider-nav-btn.next-btn').forEach(child => child.remove());
             }
+
             const elements = [
                 ...document.getElementsByClassName('a_fl'),
                 ...document.getElementsByClassName('a_cn'),
