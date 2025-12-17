@@ -4,7 +4,7 @@
 // @name:zh-CN   论坛大师・Discuz！修改版
 // @name:zh-TW   論壇大師・Discuz！修改版
 // @namespace    Forum Master・Discuz!-mxdh (Update by wwwab)
-// @version      1.5.4
+// @version      1.5.5
 // @icon         https://discuz.dismall.com/favicon.ico
 // @description  Forum Master - Discuz!　Beautify the interface, Remove ads, Enhance functions.
 // @description:en    Forum Master - Discuz!　Beautify the interface, Remove ads, Enhance functions.
@@ -1359,7 +1359,7 @@
             case 'HOSTLOC':
                 return '󠀠'.repeat(10);
             default:
-                return '\r\n[color=#ffffff]插入空白字符以填充字数[/color]'; // 默认为纯白色字体的"插入空白字符以填充字数"
+                return '\r\n[color=#ffffff][size=1]插入空白字符以填充字数[/size][/color]'; // 默认为纯白色字体的"插入空白字符以填充字数"
         }
     }
 
@@ -1375,14 +1375,17 @@
     function editor_content(Message, ifWordCountLimit) {
         let OriginalMessageContent = Message.value;
         let NewMessageContent = OriginalMessageContent.trim();
-        if (Message_Edit_CONFIG.word_count_limit_bypass && OriginalMessageContent && OriginalMessageContent.length < 20 && WordCountLimitBypass_AttachContent && ifWordCountLimit === 1) {
-            NewMessageContent = NewMessageContent.concat(WordCountLimitBypass_AttachContent);
+        // 先加前缀
+        if (Message_Edit_CONFIG.reply_prefix && OriginalMessageContent && Message_Edit_CONFIG.reply_prefix_content) {
+            NewMessageContent = Message_Edit_CONFIG.reply_prefix_content.concat(NewMessageContent);
         }
+        // 再加尾巴
         if (Message_Edit_CONFIG.reply_tail && OriginalMessageContent && Message_Edit_CONFIG.reply_tail_content) {
             NewMessageContent = NewMessageContent.concat(Message_Edit_CONFIG.reply_tail_content);
         }
-        if (Message_Edit_CONFIG.reply_prefix && OriginalMessageContent && Message_Edit_CONFIG.reply_prefix_content) {
-            NewMessageContent = Message_Edit_CONFIG.reply_prefix_content.concat(NewMessageContent);
+        // 最后加字数补丁
+        if (Message_Edit_CONFIG.word_count_limit_bypass && OriginalMessageContent && OriginalMessageContent.length < 20 && WordCountLimitBypass_AttachContent && ifWordCountLimit === 1) {
+            NewMessageContent = NewMessageContent.concat(WordCountLimitBypass_AttachContent);
         }
         Message.style.opacity = '0';
         Message.value = `${NewMessageContent}`;
